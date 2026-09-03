@@ -11,4 +11,8 @@ public static class InstantPillKeywords
     [CustomEnum("CAPSULE")]
     [KeywordProperties(AutoKeywordPosition.Before)]
     public static CardKeyword Capsule;
+
+    [CustomEnum("MYSTERY")]
+    [KeywordProperties(AutoKeywordPosition.Before)]
+    public static CardKeyword Mystery;
 }

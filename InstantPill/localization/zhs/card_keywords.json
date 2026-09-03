@@ -1,4 +1,6 @@
 {
   "INSTANTPILL-CAPSULE.title": "胶囊",
-  "INSTANTPILL-CAPSULE.description": "胶囊会在战斗开始时加入手牌。"
+  "INSTANTPILL-CAPSULE.description": "胶囊会在战斗开始时加入手牌。",
+  "INSTANTPILL-MYSTERY.title": "？？？",
+  "INSTANTPILL-MYSTERY.description": "该胶囊的效果尚未揭示。"
 }
