@@ -1,8 +1,6 @@
 using System.Reflection;
-using BaseLib.Config;
 using Godot;
 using HarmonyLib;
-using InstantPill.InstantPillCode.Debug;
 using MegaCrit.Sts2.Core.Modding;
 
 namespace InstantPill.InstantPillCode;
@@ -22,8 +20,6 @@ public partial class MainFile : Node
         //If you want to use scripts defined in your mod for Godot scenes, uncomment the following line.
         //Godot.Bridge.ScriptManagerBridge.LookupScriptsInAssembly(assembly);
      
-        ModConfigRegistry.Register(ModId, new InstantPillDebugConfig());
-
         Harmony harmony = new(ModId);
 
         harmony.PatchAll(assembly);
