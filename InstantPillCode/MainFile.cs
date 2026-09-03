@@ -1,7 +1,9 @@
 using System.Reflection;
 using Godot;
 using HarmonyLib;
+using InstantPill.InstantPillCode.Gameplay.Pools;
 using MegaCrit.Sts2.Core.Modding;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace InstantPill.InstantPillCode;
 
@@ -20,9 +22,20 @@ public partial class MainFile : Node
         //If you want to use scripts defined in your mod for Godot scenes, uncomment the following line.
         //Godot.Bridge.ScriptManagerBridge.LookupScriptsInAssembly(assembly);
      
+        PillPoolSaveRegistration.Register();
+        RunManager.Instance.RunStarted += InitializePillPools;
+
         Harmony harmony = new(ModId);
 
         harmony.PatchAll(assembly);
-        Logger.Info("Initialized custom Capsule keyword and start-of-combat handler.", 1);
+        Logger.Info("Initialized custom Capsule keyword, start-of-combat handler, and per-player pill pools.", 1);
+    }
+
+    private static void InitializePillPools(RunState runState)
+    {
+        foreach (var player in runState.Players)
+        {
+            PillPoolService.EnsureInitialized(player);
+        }
     }
 }

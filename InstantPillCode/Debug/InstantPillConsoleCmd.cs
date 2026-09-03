@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Text;
 using InstantPill.InstantPillCode.Content;
+using InstantPill.InstantPillCode.Gameplay.Pools;
 using MegaCrit.Sts2.Core.DevConsole;
 using MegaCrit.Sts2.Core.DevConsole.ConsoleCommands;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -17,9 +19,9 @@ public sealed class InstantPillConsoleCmd : AbstractConsoleCmd
 {
     public override string CmdName => "instantpill";
 
-    public override string Args => "<grant|clear>";
+    public override string Args => "<grant|clear|pools>";
 
-    public override string Description => "InstantPill test command: grant Capsule to one deck card, or clear Capsule from the deck.";
+    public override string Description => "InstantPill test command: grant/clear Capsule, or print this player's pill pools.";
 
     public override bool IsNetworked => false;
 
@@ -35,14 +37,15 @@ public sealed class InstantPillConsoleCmd : AbstractConsoleCmd
 
         if (args.Length != 1)
         {
-            return new CmdResult(success: false, "Usage: instantpill <grant|clear>");
+            return new CmdResult(success: false, "Usage: instantpill <grant|clear|pools>");
         }
 
         return args[0].ToLowerInvariant() switch
         {
             "grant" => Grant(issuingPlayer),
             "clear" => Clear(issuingPlayer),
-            _ => new CmdResult(success: false, "Usage: instantpill <grant|clear>")
+            "pools" => PrintPools(issuingPlayer),
+            _ => new CmdResult(success: false, "Usage: instantpill <grant|clear|pools>")
         };
     }
 
@@ -70,5 +73,31 @@ public sealed class InstantPillConsoleCmd : AbstractConsoleCmd
 
         MainFile.Logger.Info($"Console test command removed Capsule from {cleared} deck card(s).", 1);
         return new CmdResult(success: true, $"Removed Capsule from {cleared} deck card(s).");
+    }
+
+    private static CmdResult PrintPools(Player player)
+    {
+        // RunStarted normally creates this state. EnsureInitialized is retained as a safe fallback
+        // for older saves and developer-created runs that did not dispatch that event.
+        PillPoolState state = PillPoolService.EnsureInitialized(player);
+        StringBuilder output = new();
+
+        output.AppendLine($"InstantPill pools for player {player.NetId}");
+        output.AppendLine($"Candidate effect pool ({state.RemainingEffectIds.Count} remaining):");
+        foreach (string effectId in state.RemainingEffectIds)
+        {
+            output.AppendLine($"  {effectId}");
+        }
+
+        output.AppendLine($"Capsule pool ({state.CapsuleSlots.Count} slots):");
+        foreach (PillPoolSlotState slot in state.CapsuleSlots)
+        {
+            string mapping = slot.RevealedEffectPillId ?? "unrevealed";
+            output.AppendLine($"  {slot.MysteryPillId} -> {mapping}");
+        }
+
+        string message = output.ToString().TrimEnd();
+        MainFile.Logger.Info(message, 1);
+        return new CmdResult(success: true, message);
     }
 }
