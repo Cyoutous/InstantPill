@@ -14,6 +14,7 @@ public static class PillPoolCatalog
     public static IReadOnlyList<string> EffectPillIds { get; } =
         CreateIds("EFFECT", 30)
             .Append("INSTANTPILL-I_FOUND_PILLS")
+            .Append("INSTANTPILL-PUBERTY")
             .ToArray();
 
     private static string[] CreateIds(string family, int count) =>

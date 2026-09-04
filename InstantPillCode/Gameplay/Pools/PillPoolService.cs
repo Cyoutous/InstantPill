@@ -39,28 +39,28 @@ public static class PillPoolService
         PillPoolRules.ValidateCatalog();
 
         Rng rng = new(player, PoolRngId);
-        List<string> selectedEffects = PillPoolCatalog.EffectPillIds
-            .Where(effectId => IsEligibleForCandidatePool(player, effectId))
+        List<EffectCandidate> eligibleEffects = PillPoolCatalog.EffectPillIds
+            .Select(effectId => CreateEffectCandidate(player, effectId))
+            .Where(candidate => candidate.Grade != BaseEffectPillCard.EffectPillGrade.Excluded)
             .ToList();
         List<string> selectedMysteries = new(PillPoolCatalog.MysteryPillIds);
 
-        if (selectedEffects.Count == 0)
+        if (eligibleEffects.Count == 0)
         {
             throw new InvalidOperationException("InstantPill has no eligible effect pills for its candidate pool.");
         }
 
-        int effectivePoolSize = Math.Min(PillPoolRules.PoolSize, selectedEffects.Count);
+        int effectivePoolSize = Math.Min(PillPoolRules.PoolSize, eligibleEffects.Count);
         if (effectivePoolSize < PillPoolRules.PoolSize)
         {
             MainFile.Logger.Warn(
-                $"InstantPill found only {selectedEffects.Count} eligible effect pill(s) for a target pool size of {PillPoolRules.PoolSize}. The candidate pool will use {effectivePoolSize} slot(s).",
+                $"InstantPill found only {eligibleEffects.Count} eligible effect pill(s) for a target pool size of {PillPoolRules.PoolSize}. The candidate pool will use {effectivePoolSize} slot(s).",
                 1);
         }
 
-        rng.Shuffle(selectedEffects);
+        List<string> candidateEffects = SelectCandidateEffects(eligibleEffects, effectivePoolSize, rng);
         rng.Shuffle(selectedMysteries);
 
-        List<string> candidateEffects = selectedEffects.Take(effectivePoolSize).ToList();
         List<string> selectedMysteryIds = selectedMysteries.Take(effectivePoolSize).ToList();
 
         PillPoolState state = new()
@@ -193,7 +193,43 @@ public static class PillPoolService
         return new Rng(player, PoolRngId, mixin);
     }
 
-    private static bool IsEligibleForCandidatePool(Player player, string effectCardId)
+    private static List<string> SelectCandidateEffects(
+        List<EffectCandidate> eligibleEffects,
+        int targetCount,
+        Rng rng)
+    {
+        List<EffectCandidate> remainingEffects = new(eligibleEffects);
+        List<string> selectedEffectIds = new(targetCount);
+
+        foreach ((BaseEffectPillCard.EffectPillGrade grade, int quota) in PillPoolRules.PriorityGradeQuotas)
+        {
+            if (selectedEffectIds.Count >= targetCount)
+            {
+                break;
+            }
+
+            List<EffectCandidate> candidatesAtGrade = remainingEffects
+                .Where(candidate => candidate.Grade == grade)
+                .ToList();
+            rng.Shuffle(candidatesAtGrade);
+
+            int drawCount = Math.Min(quota, targetCount - selectedEffectIds.Count);
+            foreach (EffectCandidate selected in candidatesAtGrade.Take(drawCount))
+            {
+                selectedEffectIds.Add(selected.Id);
+                remainingEffects.Remove(selected);
+            }
+        }
+
+        rng.Shuffle(remainingEffects);
+        selectedEffectIds.AddRange(remainingEffects
+            .Take(Math.Max(0, targetCount - selectedEffectIds.Count))
+            .Select(candidate => candidate.Id));
+
+        return selectedEffectIds;
+    }
+
+    private static EffectCandidate CreateEffectCandidate(Player player, string effectCardId)
     {
         CardModel canonicalCard = ModelDb.GetById<CardModel>(
             new ModelId(ModelId.SlugifyCategory<CardModel>(), effectCardId));
@@ -205,8 +241,12 @@ public static class PillPoolService
                 $"InstantPill effect catalog entry {effectCardId} does not create a {nameof(BaseEffectPillCard)}.");
         }
 
-        return effectPill.Grade != BaseEffectPillCard.EffectPillGrade.Excluded;
+        return new EffectCandidate(effectCardId, effectPill.Grade);
     }
+
+    private readonly record struct EffectCandidate(
+        string Id,
+        BaseEffectPillCard.EffectPillGrade Grade);
 
     private static void UpgradeSchemaV1State(Player player, PillPoolState state)
     {
