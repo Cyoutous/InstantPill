@@ -15,6 +15,18 @@ namespace InstantPill.InstantPillCode.Cards.Effect;
 /// </summary>
 public abstract class BaseEffectPillCard : BasePillCard
 {
+    /// <summary>
+    /// Internal balance metadata used only when constructing a run's candidate-effect pool.
+    /// It intentionally has no localization, keyword, or card-facing representation.
+    /// </summary>
+    public enum EffectPillGrade
+    {
+        Grade0 = 0,
+        Grade1 = 1,
+        Grade2 = 2,
+        Grade3 = 3
+    }
+
     protected BaseEffectPillCard()
         : base(0)
     {
@@ -32,6 +44,12 @@ public abstract class BaseEffectPillCard : BasePillCard
     public override string BetaPortraitPath => PortraitPath;
 
     public override IEnumerable<string> AllPortraitPaths => PillPortraitCatalog.AllEffectPortraitPaths;
+
+    /// <summary>
+    /// Hidden generation weight class. Individual effect pills can override this when the pool
+    /// composition algorithm begins using grades.
+    /// </summary>
+    public virtual EffectPillGrade Grade => EffectPillGrade.Grade0;
 
     protected abstract int StrengthAmount { get; }
 
