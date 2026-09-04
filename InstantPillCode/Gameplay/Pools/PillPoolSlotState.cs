@@ -3,30 +3,38 @@ using MegaCrit.Sts2.Core.Multiplayer.Serialization;
 namespace InstantPill.InstantPillCode.Gameplay.Pools;
 
 /// <summary>
-/// One persistent capsule-pool slot. The mystery card identity is its visual identity;
-/// once revealed, every copy of that mystery card maps to the same effect card entry.
+/// One persistent capsule-pool slot. The effect assignment is fixed at run start;
+/// revealing a pill only activates that pre-existing mapping.
 /// </summary>
 public sealed class PillPoolSlotState : IPacketSerializable
 {
     public string MysteryPillId { get; set; } = string.Empty;
 
-    public string? RevealedEffectPillId { get; set; }
+    public string AssignedEffectPillId { get; set; } = string.Empty;
 
-    public string CurrentCardId => RevealedEffectPillId ?? MysteryPillId;
+    public bool IsRevealed { get; set; }
+
+    public string CurrentCardId => IsRevealed ? AssignedEffectPillId : MysteryPillId;
 
     public void Serialize(PacketWriter writer)
     {
         writer.WriteString(MysteryPillId);
-        writer.WriteBool(RevealedEffectPillId != null);
-        if (RevealedEffectPillId != null)
-        {
-            writer.WriteString(RevealedEffectPillId);
-        }
+        writer.WriteString(AssignedEffectPillId);
+        writer.WriteBool(IsRevealed);
     }
 
     public void Deserialize(PacketReader reader)
     {
         MysteryPillId = reader.ReadString();
-        RevealedEffectPillId = reader.ReadBool() ? reader.ReadString() : null;
+        AssignedEffectPillId = reader.ReadString();
+        IsRevealed = reader.ReadBool();
+    }
+
+    internal void DeserializeSchemaV1(PacketReader reader)
+    {
+        MysteryPillId = reader.ReadString();
+        string? previouslyRevealedEffect = reader.ReadBool() ? reader.ReadString() : null;
+        AssignedEffectPillId = previouslyRevealedEffect ?? string.Empty;
+        IsRevealed = previouslyRevealedEffect != null;
     }
 }

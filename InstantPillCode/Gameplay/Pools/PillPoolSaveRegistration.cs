@@ -18,7 +18,8 @@ public static class PillPoolSaveRegistration
 
         ExtendedSaveTypes.RegisterObjectSaveType<PillPoolSlotState>(
             ExtendedSaveTypes.PropertyFunc<PillPoolSlotState, string>(nameof(PillPoolSlotState.MysteryPillId)),
-            ExtendedSaveTypes.PropertyFunc<PillPoolSlotState, string?>(nameof(PillPoolSlotState.RevealedEffectPillId)));
+            ExtendedSaveTypes.PropertyFunc<PillPoolSlotState, string>(nameof(PillPoolSlotState.AssignedEffectPillId)),
+            ExtendedSaveTypes.PropertyFunc<PillPoolSlotState, bool>(nameof(PillPoolSlotState.IsRevealed)));
         ExtendedSaveTypes.RegisterListSaveType<PillPoolSlotState>();
         ExtendedSaveTypes.RegisterListSaveType<string>();
         ExtendedSaveTypes.RegisterObjectSaveType<PillPoolState>(

@@ -15,6 +15,7 @@ namespace InstantPill.InstantPillCode.Gameplay.Pools;
 public static class PillPoolService
 {
     private static readonly ModelId PoolRngId = new("INSTANTPILL", "PILL_POOL");
+    private static readonly ModelId SchemaV1MigrationRngId = new("INSTANTPILL", "PILL_POOL_SCHEMA_V1_MIGRATION");
 
     public static SavedSpireField<Player, PillPoolState> State { get; } =
         new(_ => null, "instant_pill_pool");
@@ -28,6 +29,7 @@ public static class PillPoolService
         PillPoolState? existingState = State.Get(player);
         if (existingState != null)
         {
+            UpgradeSchemaV1State(player, existingState);
             ValidateExistingState(existingState);
             return existingState;
         }
@@ -40,12 +42,18 @@ public static class PillPoolService
         rng.Shuffle(selectedEffects);
         rng.Shuffle(selectedMysteries);
 
+        List<string> candidateEffects = selectedEffects.Take(PillPoolRules.PoolSize).ToList();
+        List<string> selectedMysteryIds = selectedMysteries.Take(PillPoolRules.PoolSize).ToList();
+
         PillPoolState state = new()
         {
-            RemainingEffectIds = selectedEffects.Take(PillPoolRules.PoolSize).ToList(),
-            CapsuleSlots = selectedMysteries
-                .Take(PillPoolRules.PoolSize)
-                .Select(mysteryId => new PillPoolSlotState { MysteryPillId = mysteryId })
+            RemainingEffectIds = candidateEffects,
+            CapsuleSlots = selectedMysteryIds
+                .Select((mysteryId, index) => new PillPoolSlotState
+                {
+                    MysteryPillId = mysteryId,
+                    AssignedEffectPillId = candidateEffects[index]
+                })
                 .ToList()
         };
 
@@ -75,10 +83,19 @@ public static class PillPoolService
     }
 
     /// <summary>
-    /// Returns an existing mapping or reveals one remaining candidate effect for this mystery
-    /// identity. A null return means the supplied card is not a member of this player's capsule pool.
+    /// Activates the effect assignment fixed for this mystery identity at run start. A null return
+    /// means the supplied card is not a member of this player's capsule pool.
     /// </summary>
     public static string? RevealMysteryPill(Player player, string mysteryPillId)
+    {
+        return ActivateMysteryPill(player, mysteryPillId);
+    }
+
+    /// <summary>
+    /// Looks up the effect fixed for this mystery identity at run start. This is intentionally
+    /// non-mutating so callers can prepare card transformations before activating the reveal.
+    /// </summary>
+    public static string? TryGetAssignedEffectCardId(Player player, string mysteryPillId)
     {
         PillPoolState state = EnsureInitialized(player);
         PillPoolSlotState? slot = state.CapsuleSlots
@@ -89,34 +106,61 @@ public static class PillPoolService
             return null;
         }
 
-        if (slot.RevealedEffectPillId != null)
+        return slot.AssignedEffectPillId;
+    }
+
+    /// <summary>
+    /// Looks up the mystery identity which was preassigned to an effect. Unlike normal pool APIs,
+    /// this is safe for UI property getters: it never creates state, migrates saves, or advances
+    /// a random number generator.
+    /// </summary>
+    public static string? TryGetMysteryPillIdForAssignedEffect(Player player, string effectPillId)
+    {
+        PillPoolState? state = State.Get(player);
+        return state?.CapsuleSlots
+            .FirstOrDefault(slot => slot.AssignedEffectPillId == effectPillId)
+            ?.MysteryPillId;
+    }
+
+    /// <summary>
+    /// Marks an existing mystery-to-effect mapping as revealed. No RNG is used here: the assigned
+    /// effect was fixed when this run's pool state was initialized.
+    /// </summary>
+    public static string? ActivateMysteryPill(Player player, string mysteryPillId)
+    {
+        PillPoolState state = EnsureInitialized(player);
+        PillPoolSlotState? slot = state.CapsuleSlots
+            .FirstOrDefault(candidate => candidate.MysteryPillId == mysteryPillId);
+
+        if (slot == null)
         {
-            return slot.RevealedEffectPillId;
+            return null;
         }
 
-        if (state.RemainingEffectIds.Count == 0)
+        if (slot.IsRevealed)
+        {
+            return slot.AssignedEffectPillId;
+        }
+
+        if (!state.RemainingEffectIds.Remove(slot.AssignedEffectPillId))
         {
             throw new InvalidOperationException(
-                $"InstantPill has no candidate effect remaining to reveal {mysteryPillId}.");
+                $"InstantPill could not activate the preassigned effect for {mysteryPillId}.");
         }
 
-        Rng rng = NextPoolRng(player, state);
-        int effectIndex = rng.NextInt(state.RemainingEffectIds.Count);
-        string revealedEffectId = state.RemainingEffectIds[effectIndex];
-        state.RemainingEffectIds.RemoveAt(effectIndex);
-        slot.RevealedEffectPillId = revealedEffectId;
+        slot.IsRevealed = true;
         State.Set(player, state);
 
-        MainFile.Logger.Info($"Revealed {mysteryPillId} as {revealedEffectId} for player {player.NetId}.", 1);
-        return revealedEffectId;
+        MainFile.Logger.Info($"Activated preassigned mapping {mysteryPillId} -> {slot.AssignedEffectPillId} for player {player.NetId}.", 1);
+        return slot.AssignedEffectPillId;
     }
 
     public static string? TryGetRevealedEffectCardId(Player player, string mysteryPillId)
     {
         PillPoolState state = EnsureInitialized(player);
-        return state.CapsuleSlots
-            .FirstOrDefault(slot => slot.MysteryPillId == mysteryPillId)
-            ?.RevealedEffectPillId;
+        PillPoolSlotState? slot = state.CapsuleSlots
+            .FirstOrDefault(candidate => candidate.MysteryPillId == mysteryPillId);
+        return slot is { IsRevealed: true } ? slot.AssignedEffectPillId : null;
     }
 
     private static Rng NextPoolRng(Player player, PillPoolState state)
@@ -129,6 +173,35 @@ public static class PillPoolService
         ulong mixin = (ulong)state.RandomRollCounter;
         state.RandomRollCounter++;
         return new Rng(player, PoolRngId, mixin);
+    }
+
+    private static void UpgradeSchemaV1State(Player player, PillPoolState state)
+    {
+        if (state.SchemaVersion != 1)
+        {
+            return;
+        }
+
+        List<PillPoolSlotState> unrevealedSlots = state.CapsuleSlots
+            .Where(slot => !slot.IsRevealed)
+            .ToList();
+
+        if (unrevealedSlots.Count != state.RemainingEffectIds.Count)
+        {
+            throw new InvalidOperationException(
+                "InstantPill schema-v1 state cannot be migrated because its unrevealed slots and remaining effects do not match.");
+        }
+
+        List<string> assignments = new(state.RemainingEffectIds);
+        new Rng(player, SchemaV1MigrationRngId).Shuffle(assignments);
+        for (int index = 0; index < unrevealedSlots.Count; index++)
+        {
+            unrevealedSlots[index].AssignedEffectPillId = assignments[index];
+        }
+
+        state.SchemaVersion = PillPoolRules.SchemaVersion;
+        State.Set(player, state);
+        MainFile.Logger.Info($"Migrated InstantPill pool state for player {player.NetId} from schema v1 to v2.", 1);
     }
 
     private static void ValidateExistingState(PillPoolState state)
@@ -159,9 +232,16 @@ public static class PillPoolService
             throw new InvalidOperationException("InstantPill saved candidate-effect pool contains duplicate entries.");
         }
 
+        if (state.CapsuleSlots.Select(slot => slot.AssignedEffectPillId).Distinct().Count() != state.CapsuleSlots.Count)
+        {
+            throw new InvalidOperationException("InstantPill saved capsule pool contains duplicate assigned effects.");
+        }
+
         if (state.CapsuleSlots.Any(slot => !PillPoolCatalog.MysteryPillIds.Contains(slot.MysteryPillId)) ||
+            state.CapsuleSlots.Any(slot => !PillPoolCatalog.EffectPillIds.Contains(slot.AssignedEffectPillId)) ||
             state.RemainingEffectIds.Any(effectId => !PillPoolCatalog.EffectPillIds.Contains(effectId)) ||
-            state.CapsuleSlots.Any(slot => slot.RevealedEffectPillId != null && !PillPoolCatalog.EffectPillIds.Contains(slot.RevealedEffectPillId)))
+            state.RemainingEffectIds.Any(effectId => !state.CapsuleSlots.Any(slot => slot.AssignedEffectPillId == effectId)) ||
+            state.CapsuleSlots.Any(slot => slot.IsRevealed && state.RemainingEffectIds.Contains(slot.AssignedEffectPillId)))
         {
             throw new InvalidOperationException("InstantPill saved pool references a card that is not in the current catalog.");
         }

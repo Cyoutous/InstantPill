@@ -12,8 +12,8 @@ public sealed class PillPoolState : IPacketSerializable
 {
     public int SchemaVersion { get; set; } = PillPoolRules.SchemaVersion;
 
-    // Advances whenever this service makes a random pool decision after initialization.
-    // It is persisted so save/load cannot reroll future rewards or revelations.
+    // Advances whenever this service randomly selects a capsule-pool slot for a reward.
+    // Effect mappings are fixed during initialization and never use this counter.
     public int RandomRollCounter { get; set; }
 
     public List<string> RemainingEffectIds { get; set; } = [];
@@ -39,12 +39,24 @@ public sealed class PillPoolState : IPacketSerializable
         RandomRollCounter = reader.ReadInt();
         RemainingEffectIds = ReadStringList(reader);
 
+        if (SchemaVersion != 1 && SchemaVersion != PillPoolRules.SchemaVersion)
+        {
+            throw new InvalidOperationException($"Unsupported InstantPill pool-state schema {SchemaVersion}.");
+        }
+
         int slotCount = ReadCount(reader, "capsule slot");
         CapsuleSlots = new List<PillPoolSlotState>(slotCount);
         for (int index = 0; index < slotCount; index++)
         {
             PillPoolSlotState slot = new();
-            slot.Deserialize(reader);
+            if (SchemaVersion == 1)
+            {
+                slot.DeserializeSchemaV1(reader);
+            }
+            else
+            {
+                slot.Deserialize(reader);
+            }
             CapsuleSlots.Add(slot);
         }
     }

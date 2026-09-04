@@ -92,8 +92,8 @@ public sealed class InstantPillConsoleCmd : AbstractConsoleCmd
         output.AppendLine($"Capsule pool ({state.CapsuleSlots.Count} slots):");
         foreach (PillPoolSlotState slot in state.CapsuleSlots)
         {
-            string mapping = slot.RevealedEffectPillId ?? "unrevealed";
-            output.AppendLine($"  {slot.MysteryPillId} -> {mapping}");
+            string activationState = slot.IsRevealed ? "revealed" : "unrevealed";
+            output.AppendLine($"  {slot.MysteryPillId} -> {slot.AssignedEffectPillId} ({activationState})");
         }
 
         string message = output.ToString().TrimEnd();

@@ -26,6 +26,13 @@ public abstract class BaseEffectPillCard : BasePillCard
         BaseLibKeywords.Purge
     ];
 
+    public override string PortraitPath => PillPortraitCatalog.GetEffectPortraitPath(this);
+
+    // Revealing an effect changes card text and behaviour, not the identity image shown to player.
+    public override string BetaPortraitPath => PortraitPath;
+
+    public override IEnumerable<string> AllPortraitPaths => PillPortraitCatalog.AllEffectPortraitPaths;
+
     protected abstract int StrengthAmount { get; }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
