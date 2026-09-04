@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using BaseLib.Utils;
 using InstantPill.InstantPillCode;
+using InstantPill.InstantPillCode.Cards.Effect;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Random;
@@ -37,13 +39,29 @@ public static class PillPoolService
         PillPoolRules.ValidateCatalog();
 
         Rng rng = new(player, PoolRngId);
-        List<string> selectedEffects = new(PillPoolCatalog.EffectPillIds);
+        List<string> selectedEffects = PillPoolCatalog.EffectPillIds
+            .Where(effectId => IsEligibleForCandidatePool(player, effectId))
+            .ToList();
         List<string> selectedMysteries = new(PillPoolCatalog.MysteryPillIds);
+
+        if (selectedEffects.Count == 0)
+        {
+            throw new InvalidOperationException("InstantPill has no eligible effect pills for its candidate pool.");
+        }
+
+        int effectivePoolSize = Math.Min(PillPoolRules.PoolSize, selectedEffects.Count);
+        if (effectivePoolSize < PillPoolRules.PoolSize)
+        {
+            MainFile.Logger.Warn(
+                $"InstantPill found only {selectedEffects.Count} eligible effect pill(s) for a target pool size of {PillPoolRules.PoolSize}. The candidate pool will use {effectivePoolSize} slot(s).",
+                1);
+        }
+
         rng.Shuffle(selectedEffects);
         rng.Shuffle(selectedMysteries);
 
-        List<string> candidateEffects = selectedEffects.Take(PillPoolRules.PoolSize).ToList();
-        List<string> selectedMysteryIds = selectedMysteries.Take(PillPoolRules.PoolSize).ToList();
+        List<string> candidateEffects = selectedEffects.Take(effectivePoolSize).ToList();
+        List<string> selectedMysteryIds = selectedMysteries.Take(effectivePoolSize).ToList();
 
         PillPoolState state = new()
         {
@@ -173,6 +191,21 @@ public static class PillPoolService
         ulong mixin = (ulong)state.RandomRollCounter;
         state.RandomRollCounter++;
         return new Rng(player, PoolRngId, mixin);
+    }
+
+    private static bool IsEligibleForCandidatePool(Player player, string effectCardId)
+    {
+        CardModel canonicalCard = ModelDb.GetById<CardModel>(
+            new ModelId(ModelId.SlugifyCategory<CardModel>(), effectCardId));
+        CardModel candidateCard = player.RunState.CreateCard(canonicalCard, player);
+
+        if (candidateCard is not BaseEffectPillCard effectPill)
+        {
+            throw new InvalidOperationException(
+                $"InstantPill effect catalog entry {effectCardId} does not create a {nameof(BaseEffectPillCard)}.");
+        }
+
+        return effectPill.Grade != BaseEffectPillCard.EffectPillGrade.Excluded;
     }
 
     private static void UpgradeSchemaV1State(Player player, PillPoolState state)

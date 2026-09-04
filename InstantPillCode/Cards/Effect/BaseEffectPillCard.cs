@@ -21,6 +21,11 @@ public abstract class BaseEffectPillCard : BasePillCard
     /// </summary>
     public enum EffectPillGrade
     {
+        /// <summary>
+        /// Developer-only grade. The card remains registered and can be created directly, but is excluded
+        /// from a newly initialized run's candidate-effect pool.
+        /// </summary>
+        Excluded = -1,
         Grade0 = 0,
         Grade1 = 1,
         Grade2 = 2,

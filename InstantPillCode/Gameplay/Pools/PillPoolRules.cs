@@ -25,9 +25,5 @@ public static class PillPoolRules
             throw new InvalidOperationException("InstantPill pool size exceeds the available mystery pill models.");
         }
 
-        if (PoolSize > PillPoolCatalog.EffectPillIds.Count)
-        {
-            throw new InvalidOperationException("InstantPill pool size exceeds the available effect pill models.");
-        }
     }
 }
