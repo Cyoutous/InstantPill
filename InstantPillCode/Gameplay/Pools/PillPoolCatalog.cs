@@ -11,7 +11,10 @@ public static class PillPoolCatalog
 {
     public static IReadOnlyList<string> MysteryPillIds { get; } = CreateIds("MYSTERY", 20);
 
-    public static IReadOnlyList<string> EffectPillIds { get; } = CreateIds("EFFECT", 30);
+    public static IReadOnlyList<string> EffectPillIds { get; } =
+        CreateIds("EFFECT", 30)
+            .Append("INSTANTPILL-I_FOUND_PILLS")
+            .ToArray();
 
     private static string[] CreateIds(string family, int count) =>
         Enumerable.Range(1, count)

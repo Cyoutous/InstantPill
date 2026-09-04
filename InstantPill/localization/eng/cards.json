@@ -100,5 +100,7 @@
   "INSTANTPILL-EFFECT_PILL_029.title": "Test Effect 029",
   "INSTANTPILL-EFFECT_PILL_029.description": "",
   "INSTANTPILL-EFFECT_PILL_030.title": "Test Effect 030",
-  "INSTANTPILL-EFFECT_PILL_030.description": ""
+  "INSTANTPILL-EFFECT_PILL_030.description": "",
+  "INSTANTPILL-I_FOUND_PILLS.title": "I Found Pills",
+  "INSTANTPILL-I_FOUND_PILLS.description": "Heal 1 HP."
 }
