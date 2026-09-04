@@ -19,7 +19,7 @@ namespace InstantPill.InstantPillCode.Cards.Effect;
 public sealed class IFoundPills : BaseEffectPillCard
 {
     private const string SoundPath = "res://audio/i found pills 3.wav";
-    private const float SoundVolume = 1f;
+    private const float SoundVolume = 0.6f;
 
     // The shared test base still requires this member; this card overrides its test Strength play effect.
     protected override int StrengthAmount => 0;

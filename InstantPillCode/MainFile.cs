@@ -3,6 +3,7 @@ using Godot;
 using HarmonyLib;
 using InstantPill.InstantPillCode.Audio;
 using InstantPill.InstantPillCode.Configuration;
+using InstantPill.InstantPillCode.Gameplay.Effects;
 using InstantPill.InstantPillCode.Gameplay.Pools;
 using InstantPill.InstantPillCode.Gameplay.Rewards;
 using MegaCrit.Sts2.Core.Modding;
@@ -30,6 +31,7 @@ public partial class MainFile : Node
      
         PillPoolSaveRegistration.Register();
         PillRewardSaveRegistration.Register();
+        PubertySaveRegistration.Register();
         RunManager.Instance.RunStarted += InitializePillRunState;
 
         Harmony harmony = new(ModId);
