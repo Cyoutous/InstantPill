@@ -104,5 +104,7 @@
   "INSTANTPILL-I_FOUND_PILLS.title": "I Found Pills",
   "INSTANTPILL-I_FOUND_PILLS.description": "Heal 1 HP.",
   "INSTANTPILL-PUBERTY.title": "Puberty",
-  "INSTANTPILL-PUBERTY.description": "You rage a bit."
+  "INSTANTPILL-PUBERTY.description": "You rage a bit.",
+  "INSTANTPILL-RE_LAX.title": "Re-Lax",
+  "INSTANTPILL-RE_LAX.description": "Listen."
 }
