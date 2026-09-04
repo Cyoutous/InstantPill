@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using MegaCrit.Sts2.Core.Saves;
 
 namespace InstantPill.InstantPillCode.Audio;
 
@@ -12,38 +14,45 @@ namespace InstantPill.InstantPillCode.Audio;
 /// </summary>
 internal static class PillAudio
 {
-    public const string IFoundPillsPath = "res://audio/i found pills 3.wav";
-
     private const string StreamingFilesTypeName = "STS2RitsuLib.Audio.FmodStudioStreamingFiles";
 
     private static MethodInfo? _preloadAsSound;
     private static MethodInfo? _playSoundFile;
-    private static bool _preloadRequested;
+    private static readonly HashSet<string> PreloadedPaths = new(StringComparer.Ordinal);
     private static bool _reportedUnavailable;
     private static bool _reportedReady;
 
-    /// <summary>Preloads the one-shot sound when RitsuLib's FMOD bridge is available.</summary>
+    /// <summary>Finds the optional RitsuLib FMOD bridge without preloading any individual asset.</summary>
     public static void Initialize()
     {
         ResolveStreamingMethods();
+    }
 
-        if (_preloadRequested || _preloadAsSound is null)
+    /// <summary>
+    /// Preloads a mod-owned raw audio asset once, then plays it as a local FMOD one-shot.
+    /// The caller owns the resource path and decides when playback is appropriate.
+    /// </summary>
+    public static void PlayOneShot(string resourcePath, float baseVolume = 1f, float pitch = 1f)
+    {
+        if (string.IsNullOrWhiteSpace(resourcePath))
         {
+            MainFile.Logger.Warn("InstantPill ignored an audio request with an empty resource path.");
             return;
         }
 
-        _preloadRequested = true;
-        Invoke(_preloadAsSound, IFoundPillsPath, "preload");
-    }
-
-    /// <summary>Plays the I Found Pills one-shot for the local player.</summary>
-    public static void PlayIFoundPills()
-    {
         Initialize();
+
+        if (_preloadAsSound is not null && PreloadedPaths.Add(resourcePath))
+        {
+            Invoke(_preloadAsSound, resourcePath, "preload");
+        }
 
         if (_playSoundFile is not null)
         {
-            Invoke(_playSoundFile, IFoundPillsPath, "play");
+            // VolumeSfx is the 0-1 value driven by the game's native SFX-volume slider.
+            // Reading it here keeps every new capsule sound aligned with the player's current setting.
+            float actualVolume = baseVolume * Math.Clamp(SaveManager.Instance.SettingsSave.VolumeSfx, 0f, 1f);
+            Invoke(_playSoundFile, resourcePath, "play", actualVolume, pitch);
         }
     }
 
@@ -93,7 +102,12 @@ internal static class PillAudio
         });
     }
 
-    private static void Invoke(MethodInfo method, string path, string operation)
+    private static void Invoke(
+        MethodInfo method,
+        string path,
+        string operation,
+        float? volume = null,
+        float? pitch = null)
     {
         try
         {
@@ -104,6 +118,16 @@ internal static class PillAudio
             for (int i = 1; i < arguments.Length; i++)
             {
                 arguments[i] = Type.Missing;
+            }
+
+            if (volume.HasValue && arguments.Length > 1)
+            {
+                arguments[1] = volume.Value;
+            }
+
+            if (pitch.HasValue && arguments.Length > 2)
+            {
+                arguments[2] = pitch.Value;
             }
 
             method.Invoke(null, arguments);

@@ -18,6 +18,9 @@ namespace InstantPill.InstantPillCode.Cards.Effect;
 [CustomID("INSTANTPILL-I_FOUND_PILLS")]
 public sealed class IFoundPills : BaseEffectPillCard
 {
+    private const string SoundPath = "res://audio/i found pills 3.wav";
+    private const float SoundVolume = 1f;
+
     // The shared test base still requires this member; this card overrides its test Strength play effect.
     protected override int StrengthAmount => 0;
 
@@ -34,7 +37,7 @@ public sealed class IFoundPills : BaseEffectPillCard
             return;
         }
 
-        PillAudio.PlayIFoundPills();
+        PillAudio.PlayOneShot(SoundPath, SoundVolume);
 
         string text = new LocString("combat_messages", GetThoughtKey()).GetFormattedText();
         NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(
