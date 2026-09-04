@@ -1,0 +1,54 @@
+{
+  "$schema": "https://raw.githubusercontent.com/BAKAOLC/STS2-RitsuLib/main/schemas/mod-settings/runtime-interop/v1/schema.json",
+  "modId": "InstantPill",
+  "modDisplayName": { "langMap": { "zhs": "InstantPill", "en": "InstantPill" }, "fallback": "InstantPill" },
+  "pages": [
+    {
+      "pageId": "reward_rules",
+      "title": { "langMap": { "zhs": "胶囊奖励设置", "en": "Pill Reward Settings" }, "fallback": "Pill Reward Settings" },
+      "sections": [
+        {
+          "id": "independent_drop",
+          "title": { "langMap": { "zhs": "独立胶囊掉落", "en": "Independent Pill Drop" }, "fallback": "Independent Pill Drop" },
+          "entries": [
+            { "id": "independent_base_odds", "type": "int-slider", "key": "independent_base_odds", "label": { "langMap": { "zhs": "基础概率", "en": "Base chance" }, "fallback": "Base chance" }, "min": 0, "max": 100, "step": 1, "defaultValue": 45, "scope": "global" },
+            { "id": "independent_failure_increase", "type": "int-slider", "key": "independent_failure_increase", "label": { "langMap": { "zhs": "未掉落后上升", "en": "Increase after no drop" }, "fallback": "Increase after no drop" }, "min": 0, "max": 100, "step": 1, "defaultValue": 35, "scope": "global" },
+            { "id": "independent_success_decrease", "type": "int-slider", "key": "independent_success_decrease", "label": { "langMap": { "zhs": "掉落后下降", "en": "Decrease after drop" }, "fallback": "Decrease after drop" }, "min": 0, "max": 100, "step": 1, "defaultValue": 25, "scope": "global" },
+            { "id": "independent_elite_bonus", "type": "int-slider", "key": "independent_elite_bonus", "label": { "langMap": { "zhs": "精英战修正", "en": "Elite modifier" }, "fallback": "Elite modifier" }, "min": -100, "max": 100, "step": 1, "defaultValue": 15, "scope": "global" },
+            { "id": "independent_boss_bonus", "type": "int-slider", "key": "independent_boss_bonus", "label": { "langMap": { "zhs": "首领战修正", "en": "Boss modifier" }, "fallback": "Boss modifier" }, "min": -100, "max": 100, "step": 1, "defaultValue": 25, "scope": "global" },
+            { "id": "independent_minimum_odds", "type": "int-slider", "key": "independent_minimum_odds", "label": { "langMap": { "zhs": "最低概率", "en": "Minimum chance" }, "fallback": "Minimum chance" }, "min": 0, "max": 100, "step": 1, "defaultValue": 0, "scope": "global" },
+            { "id": "independent_maximum_odds", "type": "int-slider", "key": "independent_maximum_odds", "label": { "langMap": { "zhs": "最高概率", "en": "Maximum chance" }, "fallback": "Maximum chance" }, "min": 0, "max": 100, "step": 1, "defaultValue": 100, "scope": "global" }
+          ]
+        },
+        {
+          "id": "potion_replacement",
+          "title": { "langMap": { "zhs": "药水替换为胶囊", "en": "Potion Replacement" }, "fallback": "Potion Replacement" },
+          "entries": [
+            { "id": "replacement_base_odds", "type": "int-slider", "key": "replacement_base_odds", "label": { "langMap": { "zhs": "基础概率", "en": "Base chance" }, "fallback": "Base chance" }, "min": 0, "max": 100, "step": 1, "defaultValue": 5, "scope": "global" },
+            { "id": "replacement_failure_increase", "type": "int-slider", "key": "replacement_failure_increase", "label": { "langMap": { "zhs": "未替换后上升", "en": "Increase after no replacement" }, "fallback": "Increase after no replacement" }, "min": 0, "max": 100, "step": 1, "defaultValue": 3, "scope": "global" },
+            { "id": "replacement_success_decrease", "type": "int-slider", "key": "replacement_success_decrease", "label": { "langMap": { "zhs": "替换后下降", "en": "Decrease after replacement" }, "fallback": "Decrease after replacement" }, "min": 0, "max": 100, "step": 1, "defaultValue": 3, "scope": "global" },
+            { "id": "replacement_elite_bonus", "type": "int-slider", "key": "replacement_elite_bonus", "label": { "langMap": { "zhs": "精英战修正", "en": "Elite modifier" }, "fallback": "Elite modifier" }, "min": -100, "max": 100, "step": 1, "defaultValue": 5, "scope": "global" },
+            { "id": "replacement_boss_bonus", "type": "int-slider", "key": "replacement_boss_bonus", "label": { "langMap": { "zhs": "首领战修正", "en": "Boss modifier" }, "fallback": "Boss modifier" }, "min": -100, "max": 100, "step": 1, "defaultValue": 3, "scope": "global" },
+            { "id": "replacement_minimum_odds", "type": "int-slider", "key": "replacement_minimum_odds", "label": { "langMap": { "zhs": "最低概率", "en": "Minimum chance" }, "fallback": "Minimum chance" }, "min": 0, "max": 100, "step": 1, "defaultValue": 0, "scope": "global" },
+            { "id": "replacement_maximum_odds", "type": "int-slider", "key": "replacement_maximum_odds", "label": { "langMap": { "zhs": "最高概率", "en": "Maximum chance" }, "fallback": "Maximum chance" }, "min": 0, "max": 100, "step": 1, "defaultValue": 100, "scope": "global" }
+          ]
+        },
+        {
+          "id": "reward_contents",
+          "title": { "langMap": { "zhs": "奖励内容", "en": "Reward Contents" }, "fallback": "Reward Contents" },
+          "entries": [
+            { "id": "normal_choice_count", "type": "int-slider", "key": "normal_choice_count", "label": { "langMap": { "zhs": "普通战候选数", "en": "Normal choices" }, "fallback": "Normal choices" }, "min": 1, "max": 20, "step": 1, "defaultValue": 3, "scope": "global" },
+            { "id": "elite_choice_count", "type": "int-slider", "key": "elite_choice_count", "label": { "langMap": { "zhs": "精英战候选数", "en": "Elite choices" }, "fallback": "Elite choices" }, "min": 1, "max": 20, "step": 1, "defaultValue": 3, "scope": "global" },
+            { "id": "boss_choice_count", "type": "int-slider", "key": "boss_choice_count", "label": { "langMap": { "zhs": "首领战候选数", "en": "Boss choices" }, "fallback": "Boss choices" }, "min": 1, "max": 20, "step": 1, "defaultValue": 3, "scope": "global" },
+            { "id": "enable_normal_rewards", "type": "toggle", "key": "enable_normal_rewards", "label": { "langMap": { "zhs": "普通战启用掉落", "en": "Enable normal rewards" }, "fallback": "Enable normal rewards" }, "defaultValue": true, "scope": "global" },
+            { "id": "enable_elite_rewards", "type": "toggle", "key": "enable_elite_rewards", "label": { "langMap": { "zhs": "精英战启用掉落", "en": "Enable elite rewards" }, "fallback": "Enable elite rewards" }, "defaultValue": true, "scope": "global" },
+            { "id": "enable_boss_rewards", "type": "toggle", "key": "enable_boss_rewards", "label": { "langMap": { "zhs": "首领战启用掉落", "en": "Enable boss rewards" }, "fallback": "Enable boss rewards" }, "defaultValue": true, "scope": "global" },
+            { "id": "prevent_duplicate_options", "type": "toggle", "key": "prevent_duplicate_options", "label": { "langMap": { "zhs": "同场胶囊选项不重复", "en": "Avoid duplicate pill options in one combat" }, "fallback": "Avoid duplicate pill options in one combat" }, "defaultValue": false, "scope": "global" },
+            { "id": "next_run_notice", "type": "info-card", "label": { "langMap": { "zhs": "说明", "en": "Note" }, "fallback": "Note" }, "body": { "langMap": { "zhs": "设置将在下一局新开局时生效；正在进行的局会保留开局时的规则。", "en": "Changes apply to the next new run. A current run keeps its saved rules." }, "fallback": "Changes apply to the next new run." } },
+            { "id": "reset_defaults", "type": "button", "key": "reset_defaults", "label": { "langMap": { "zhs": "恢复默认值", "en": "Restore defaults" }, "fallback": "Restore defaults" }, "buttonText": { "langMap": { "zhs": "恢复默认值", "en": "Restore defaults" }, "fallback": "Restore defaults" }, "tone": "accent" }
+          ]
+        }
+      ]
+    }
+  ]
+}

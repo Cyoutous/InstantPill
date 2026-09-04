@@ -42,6 +42,12 @@
         <AdditionalFiles Include="InstantPill/localization/**/*.json"/> <!-- Used by analyzer -->
     </ItemGroup>
 
+    <!-- RitsuLib reads this schema provider only when it is installed. Do not add it as a hard dependency. -->
+    <ItemGroup>
+        <AssemblyMetadata Include="RitsuLib.ModSettingsInterop.ProviderType"
+                          Value="InstantPill.InstantPillCode.Integrations.RitsuLib.PillRewardSettingsInterop" />
+    </ItemGroup>
+
     <ItemGroup>
         <Compile Remove="InstantPill/**" />
         <Compile Remove="materials/**" />
