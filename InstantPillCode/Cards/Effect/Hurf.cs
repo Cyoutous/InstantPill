@@ -31,6 +31,7 @@ public sealed class Hurf : BaseEffectPillCard
     private const float SoundVolume = 1f;
     private const decimal InitialDamage = 10m;
     private const decimal SecondaryDamageMultiplier = 2m;
+    private const float SecondaryHitDelay = 0.25f;
 
     protected override int StrengthAmount => 0;
 
@@ -87,6 +88,8 @@ public sealed class Hurf : BaseEffectPillCard
             return;
         }
 
+        // Keep the original hit readable before the shared follow-up damage and VFX resolve.
+        await Cmd.CustomScaledWait(SecondaryHitDelay, 0.4f);
         PlayNoxiousFumesVfx(otherEnemies);
         context.AddHit(await CreatureCmd.Damage(
             choiceContext,

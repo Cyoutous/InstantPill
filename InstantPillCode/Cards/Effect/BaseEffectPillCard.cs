@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BaseLib.Cards;
 using InstantPill.InstantPillCode.Content;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -39,8 +38,7 @@ public abstract class BaseEffectPillCard : BasePillCard
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
-        InstantPillKeywords.Capsule,
-        BaseLibKeywords.Purge
+        InstantPillKeywords.Capsule
     ];
 
     public override string PortraitPath => PillPortraitCatalog.GetEffectPortraitPath(this);

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BaseLib.Cards;
 using InstantPill.InstantPillCode.Content;
 using InstantPill.InstantPillCode.Gameplay.Pools;
 using MegaCrit.Sts2.Core.Context;
@@ -28,8 +27,7 @@ public abstract class BaseMysteryPillCard : BasePillCard
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
         InstantPillKeywords.Capsule,
-        InstantPillKeywords.Mystery,
-        BaseLibKeywords.Purge
+        InstantPillKeywords.Mystery
     ];
 
     public override string PortraitPath => PillPortraitCatalog.GetMysteryPortraitPath(Id.Entry);

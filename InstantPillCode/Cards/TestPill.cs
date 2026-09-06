@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using BaseLib.Cards;
 using InstantPill.InstantPillCode.Content;
 using MegaCrit.Sts2.Core.Entities.Cards;
 
@@ -7,7 +6,8 @@ namespace InstantPill.InstantPillCode.Cards;
 
 /// <summary>
 /// Minimal verification card for the pill framework.
-/// It has no play effect: Capsule handles opening-hand entry and Purge removes its deck version after play.
+/// It has no play effect: Capsule handles opening-hand entry, end-of-turn retention,
+/// and removal from the player's deck after play.
 /// </summary>
 public sealed class TestPill : BasePillCard
 {
@@ -18,7 +18,6 @@ public sealed class TestPill : BasePillCard
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
     [
-        InstantPillKeywords.Capsule,
-        BaseLibKeywords.Purge
+        InstantPillKeywords.Capsule
     ];
 }

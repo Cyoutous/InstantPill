@@ -1,6 +1,6 @@
 {
   "INSTANTPILL-CAPSULE.title": "Capsule",
-  "INSTANTPILL-CAPSULE.description": "Capsules enter your hand at the start of combat.",
+  "INSTANTPILL-CAPSULE.description": "Capsules enter your hand at the start of combat, are retained at the end of your turn, and are removed from your deck when played.",
   "INSTANTPILL-MYSTERY.title": "???",
   "INSTANTPILL-MYSTERY.description": "This capsule's effect has not been revealed.",
   "INSTANTPILL-STATUS_CARD.title": "Status",

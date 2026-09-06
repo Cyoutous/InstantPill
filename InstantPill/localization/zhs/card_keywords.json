@@ -1,6 +1,6 @@
 {
   "INSTANTPILL-CAPSULE.title": "胶囊",
-  "INSTANTPILL-CAPSULE.description": "胶囊会在战斗开始时加入手牌。",
+  "INSTANTPILL-CAPSULE.description": "胶囊会在战斗开始时加入手牌，且不会在回合结束时被丢弃。打出后将从牌组中移除。",
   "INSTANTPILL-MYSTERY.title": "？？？",
   "INSTANTPILL-MYSTERY.description": "该胶囊的效果尚未揭示。",
   "INSTANTPILL-STATUS_CARD.title": "状态牌",
