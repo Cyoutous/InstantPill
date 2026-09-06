@@ -31,11 +31,11 @@ public sealed class EnlargedPower : CustomPowerModel
     public override PowerStackType StackType => PowerStackType.Counter;
 
     // Temporary presentation until InstantPill receives dedicated power icons.
-    public override string? CustomPackedIconPath => ModelDb.Power<DoubleDamagePower>().PackedIconPath;
+    public override string? CustomPackedIconPath => ModelDb.Power<ColossusPower>().PackedIconPath;
 
-    public override string? CustomBigIconPath => ModelDb.Power<DoubleDamagePower>().ResolvedBigIconPath;
+    public override string? CustomBigIconPath => ModelDb.Power<ColossusPower>().ResolvedBigIconPath;
 
-    public override string? CustomBigBetaIconPath => ModelDb.Power<DoubleDamagePower>().ResolvedBigIconPath;
+    public override string? CustomBigBetaIconPath => ModelDb.Power<ColossusPower>().ResolvedBigIconPath;
 
     public override Task AfterApplied(Creature? applier, CardModel? cardSource)
     {

@@ -12,7 +12,7 @@ public static class PillPoolCatalog
     public static IReadOnlyList<string> MysteryPillIds { get; } = CreateIds("MYSTERY", 13);
 
     public static IReadOnlyList<string> EffectPillIds { get; } =
-        CreateIds("EFFECT", 30)
+        CreateIds("EFFECT", 10)
             .Append("INSTANTPILL-I_FOUND_PILLS")
             .Append("INSTANTPILL-PUBERTY")
             .Append("INSTANTPILL-RE_LAX")

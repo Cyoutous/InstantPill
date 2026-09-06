@@ -22,11 +22,11 @@ public sealed class LuckUpPower : CustomPowerModel
     public override PowerStackType StackType => PowerStackType.Counter;
 
     // Temporary presentation until InstantPill receives a dedicated power icon.
-    public override string? CustomPackedIconPath => ModelDb.Power<DoubleDamagePower>().PackedIconPath;
+    public override string? CustomPackedIconPath => ModelDb.Power<RoyaltiesPower>().PackedIconPath;
 
-    public override string? CustomBigIconPath => ModelDb.Power<DoubleDamagePower>().ResolvedBigIconPath;
+    public override string? CustomBigIconPath => ModelDb.Power<RoyaltiesPower>().ResolvedBigIconPath;
 
-    public override string? CustomBigBetaIconPath => ModelDb.Power<DoubleDamagePower>().ResolvedBigIconPath;
+    public override string? CustomBigBetaIconPath => ModelDb.Power<RoyaltiesPower>().ResolvedBigIconPath;
 
     public override Task AfterCombatEnd(CombatRoom room)
     {

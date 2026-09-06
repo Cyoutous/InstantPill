@@ -16,6 +16,9 @@ namespace InstantPill.InstantPillCode.Cards.Generated;
 [CustomID("INSTANTPILL-HEART")]
 public sealed class Heart : BaseGeneratedCard
 {
+    public override string PortraitPath =>
+    "res://InstantPill/images/cards/generated/heart.png";
+
     private const decimal PercentDivisor = 100m;
 
     public Heart()

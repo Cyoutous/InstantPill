@@ -22,11 +22,11 @@ public sealed class CardCostIncreasedPower : CustomPowerModel
     public override PowerStackType StackType => PowerStackType.Counter;
 
     // Temporary presentation until InstantPill receives dedicated power icons.
-    public override string? CustomPackedIconPath => ModelDb.Power<ConfusedPower>().PackedIconPath;
+    public override string? CustomPackedIconPath => ModelDb.Power<DampenPower>().PackedIconPath;
 
-    public override string? CustomBigIconPath => ModelDb.Power<ConfusedPower>().ResolvedBigIconPath;
+    public override string? CustomBigIconPath => ModelDb.Power<DampenPower>().ResolvedBigIconPath;
 
-    public override string? CustomBigBetaIconPath => ModelDb.Power<ConfusedPower>().ResolvedBigIconPath;
+    public override string? CustomBigBetaIconPath => ModelDb.Power<DampenPower>().ResolvedBigIconPath;
 
     public override bool TryModifyEnergyCostInCombat(
         CardModel card,

@@ -22,11 +22,11 @@ public sealed class GulpPower : CustomPowerModel
     public override PowerStackType StackType => PowerStackType.Counter;
 
     // Temporary presentation until InstantPill receives a dedicated power icon.
-    public override string? CustomPackedIconPath => ModelDb.Power<DoubleDamagePower>().PackedIconPath;
+    public override string? CustomPackedIconPath => ModelDb.Power<HeistPower>().PackedIconPath;
 
-    public override string? CustomBigIconPath => ModelDb.Power<DoubleDamagePower>().ResolvedBigIconPath;
+    public override string? CustomBigIconPath => ModelDb.Power<HeistPower>().ResolvedBigIconPath;
 
-    public override string? CustomBigBetaIconPath => ModelDb.Power<DoubleDamagePower>().ResolvedBigIconPath;
+    public override string? CustomBigBetaIconPath => ModelDb.Power<HeistPower>().ResolvedBigIconPath;
 
     // The victory sequence removes all combat powers before AfterCombatVictory runs. AfterCombatEnd
     // is the final victory-only combat hook that still includes this power in its listener list.

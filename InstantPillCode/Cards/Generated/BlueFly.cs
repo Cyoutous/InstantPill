@@ -21,6 +21,9 @@ public sealed class BlueFly : BaseGeneratedCard
 {
     private const int CardsToDraw = 1;
 
+    public override string PortraitPath =>
+    "res://InstantPill/images/cards/generated/blue_fly.png";
+
     /// <summary>
     /// Blue Fly is the sole generated card that can be upgraded. All other generated cards remain
     /// non-upgradeable through <see cref="BaseGeneratedCard"/>.

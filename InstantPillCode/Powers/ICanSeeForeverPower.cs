@@ -20,11 +20,11 @@ public sealed class ICanSeeForeverPower : CustomPowerModel
     public override PowerStackType StackType => PowerStackType.Single;
 
     // Temporary presentation until InstantPill receives a dedicated power icon.
-    public override string? CustomPackedIconPath => ModelDb.Power<DoubleDamagePower>().PackedIconPath;
+    public override string? CustomPackedIconPath => ModelDb.Power<WitheringPresencePower>().PackedIconPath;
 
-    public override string? CustomBigIconPath => ModelDb.Power<DoubleDamagePower>().ResolvedBigIconPath;
+    public override string? CustomBigIconPath => ModelDb.Power<WitheringPresencePower>().ResolvedBigIconPath;
 
-    public override string? CustomBigBetaIconPath => ModelDb.Power<DoubleDamagePower>().ResolvedBigIconPath;
+    public override string? CustomBigBetaIconPath => ModelDb.Power<WitheringPresencePower>().ResolvedBigIconPath;
 
     /// <summary>
     /// A second application must not create a hidden amount of two or more. This hook only runs
