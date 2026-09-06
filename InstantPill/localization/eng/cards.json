@@ -176,5 +176,21 @@
   "INSTANTPILL-GULP.title": "Gulp!",
   "INSTANTPILL-GULP.description": "At the end of combat, gain 1 additional Relic reward.",
   "INSTANTPILL-HURF.title": "Hurf!",
-  "INSTANTPILL-HURF.description": "Deal 10 damage to a random enemy. Deal double that amount to all other enemies."
+  "INSTANTPILL-HURF.description": "Deal 10 damage to a random enemy. Deal double that amount to all other enemies.",
+  "INSTANTPILL-VURP.title": "Vurp!",
+  "INSTANTPILL-VURP.description": "Gain the last Capsule you used.\nExcept \"Vurp!\".",
+  "INSTANTPILL-HEALTH_DOWN.title": "Health Down",
+  "INSTANTPILL-HEALTH_DOWN.description": "Lose 6% of your Max HP.",
+  "INSTANTPILL-HEALTH_UP.title": "Health Up",
+  "INSTANTPILL-HEALTH_UP.description": "Gain 8 Max HP.",
+  "INSTANTPILL-SPEED_DOWN.title": "Speed Down",
+  "INSTANTPILL-SPEED_DOWN.description": "Add a [gold]Clumsy[/gold] to your deck.",
+  "INSTANTPILL-SPEED_UP.title": "Speed Up",
+  "INSTANTPILL-SPEED_UP.description": "Add a [gold]Master of Strategy[/gold] to your deck.",
+  "INSTANTPILL-LUCK_DOWN.title": "Luck Down",
+  "INSTANTPILL-LUCK_DOWN.description": "Halve the Gold reward after combat.",
+  "INSTANTPILL-LUCK_UP.title": "LuckUp",
+  "INSTANTPILL-LUCK_UP.description": "Double the Gold reward after combat.",
+  "INSTANTPILL-EXPERIMENTAL_PILL.title": "Experimental Pill",
+  "INSTANTPILL-EXPERIMENTAL_PILL.description": "Gain 1 random positive effect and 1 random negative effect."
 }

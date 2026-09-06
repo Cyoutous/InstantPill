@@ -16,5 +16,11 @@
   "INSTANTPILL-I_CAN_SEE_FOREVER.smartDescription": "Your draw pile is displayed in its actual order.",
   "INSTANTPILL-GULP.title": "Gulp!",
   "INSTANTPILL-GULP.description": "At the end of combat, gain [blue]{Amount}[/blue] additional Relic reward(s).",
-  "INSTANTPILL-GULP.smartDescription": "At the end of combat, gain [blue]{Amount}[/blue] additional Relic reward(s)."
+  "INSTANTPILL-GULP.smartDescription": "At the end of combat, gain [blue]{Amount}[/blue] additional Relic reward(s).",
+  "INSTANTPILL-LUCK_DOWN.title": "Luck Down",
+  "INSTANTPILL-LUCK_DOWN.description": "At the end of this combat, halve your Gold reward [blue]{Amount}[/blue] time(s).",
+  "INSTANTPILL-LUCK_DOWN.smartDescription": "At the end of this combat, halve your Gold reward [blue]{Amount}[/blue] time(s).",
+  "INSTANTPILL-LUCK_UP.title": "Luck Up",
+  "INSTANTPILL-LUCK_UP.description": "At the end of this combat, double your Gold reward [blue]{Amount}[/blue] time(s).",
+  "INSTANTPILL-LUCK_UP.smartDescription": "At the end of this combat, double your Gold reward [blue]{Amount}[/blue] time(s)."
 }

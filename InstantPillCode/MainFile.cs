@@ -31,7 +31,9 @@ public partial class MainFile : Node
      
         PillPoolSaveRegistration.Register();
         PillRewardSaveRegistration.Register();
+        LuckDownRewardSaveRegistration.Register();
         PubertySaveRegistration.Register();
+        CapsuleUsageSaveRegistration.Register();
         RunManager.Instance.RunStarted += InitializePillRunState;
 
         Harmony harmony = new(ModId);

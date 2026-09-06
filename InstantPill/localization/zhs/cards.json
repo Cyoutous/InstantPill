@@ -176,5 +176,21 @@
   "INSTANTPILL-GULP.title": "咕噜！",
   "INSTANTPILL-GULP.description": "战斗后额外获得1个遗物。",
   "INSTANTPILL-HURF.title": "呕！",
-  "INSTANTPILL-HURF.description": "对随机敌人造成10伤害。对所有其它敌人造成两倍等量伤害。"
+  "INSTANTPILL-HURF.description": "对随机敌人造成10伤害。对所有其它敌人造成两倍等量伤害。",
+  "INSTANTPILL-VURP.title": "嗝！",
+  "INSTANTPILL-VURP.description": "获得你上一次使用的胶囊。\n该胶囊自身除外。",
+  "INSTANTPILL-HEALTH_DOWN.title": "体力下降",
+  "INSTANTPILL-HEALTH_DOWN.description": "失去6%最大生命值。",
+  "INSTANTPILL-HEALTH_UP.title": "体力上升",
+  "INSTANTPILL-HEALTH_UP.description": "获得8点最大生命值。",
+  "INSTANTPILL-SPEED_DOWN.title": "速度下降",
+  "INSTANTPILL-SPEED_DOWN.description": "将1张[gold]笨拙[/gold]加入牌组。",
+  "INSTANTPILL-SPEED_UP.title": "速度上升",
+  "INSTANTPILL-SPEED_UP.description": "将1张[gold]战略大师[/gold]加入牌组。",
+  "INSTANTPILL-LUCK_DOWN.title": "运气下降",
+  "INSTANTPILL-LUCK_DOWN.description": "战斗后金币奖励数量减半。",
+  "INSTANTPILL-LUCK_UP.title": "运气上升",
+  "INSTANTPILL-LUCK_UP.description": "战斗后金币奖励数量翻倍。",
+  "INSTANTPILL-EXPERIMENTAL_PILL.title": "实验性胶囊",
+  "INSTANTPILL-EXPERIMENTAL_PILL.description": "获得1个随机正面效果和1个随机负面效果。"
 }

@@ -16,5 +16,11 @@
   "INSTANTPILL-I_CAN_SEE_FOREVER.smartDescription": "你的抽牌堆按实际顺序排列。",
   "INSTANTPILL-GULP.title": "咕噜！",
   "INSTANTPILL-GULP.description": "战斗结束后获得[blue]{Amount}[/blue]件遗物奖励。",
-  "INSTANTPILL-GULP.smartDescription": "战斗结束后获得[blue]{Amount}[/blue]件遗物奖励。"
+  "INSTANTPILL-GULP.smartDescription": "战斗结束后获得[blue]{Amount}[/blue]件遗物奖励。",
+  "INSTANTPILL-LUCK_DOWN.title": "运气下降",
+  "INSTANTPILL-LUCK_DOWN.description": "本场战斗结束时你的金币奖励减半[blue]{Amount}[/blue]次。",
+  "INSTANTPILL-LUCK_DOWN.smartDescription": "本场战斗结束时你的金币奖励减半[blue]{Amount}[/blue]次。",
+  "INSTANTPILL-LUCK_UP.title": "运气上升",
+  "INSTANTPILL-LUCK_UP.description": "本场战斗结束时你的金币奖励翻倍[blue]{Amount}[/blue]次。",
+  "INSTANTPILL-LUCK_UP.smartDescription": "本场战斗结束时你的金币奖励翻倍[blue]{Amount}[/blue]次。"
 }

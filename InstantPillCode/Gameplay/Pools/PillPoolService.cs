@@ -106,14 +106,26 @@ public static class PillPoolService
     /// </summary>
     public static string RollCapsuleCardId(Player player)
     {
+        return RollCapsuleCardIdExcluding(player, excludedCardId: null);
+    }
+
+    /// <summary>
+    /// Randomly selects a capsule-pool slot while excluding one current card identity. This still
+    /// rolls slots rather than distinct identities, preserving the normal pool's slot weighting.
+    /// </summary>
+    public static string RollCapsuleCardIdExcluding(Player player, string? excludedCardId)
+    {
         PillPoolState state = EnsureInitialized(player);
-        if (state.CapsuleSlots.Count == 0)
+        List<PillPoolSlotState> candidates = state.CapsuleSlots
+            .Where(slot => !string.Equals(slot.CurrentCardId, excludedCardId, StringComparison.Ordinal))
+            .ToList();
+        if (candidates.Count == 0)
         {
-            throw new InvalidOperationException("InstantPill cannot roll a capsule from an empty capsule pool.");
+            throw new InvalidOperationException("InstantPill cannot roll a capsule from the available capsule pool.");
         }
 
         Rng rng = NextPoolRng(player, state);
-        PillPoolSlotState slot = state.CapsuleSlots[rng.NextInt(state.CapsuleSlots.Count)];
+        PillPoolSlotState slot = candidates[rng.NextInt(candidates.Count)];
         State.Set(player, state);
         return slot.CurrentCardId;
     }
