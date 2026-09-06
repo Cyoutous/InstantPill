@@ -6,4 +6,6 @@ namespace InstantPill.InstantPillCode.Cards.Effect;
 public sealed class EffectPill007 : BaseEffectPillCard
 {
     protected override int StrengthAmount => 7;
+
+    public override EffectPillGrade Grade => EffectPillGrade.Excluded;
 }

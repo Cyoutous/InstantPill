@@ -9,7 +9,7 @@ namespace InstantPill.InstantPillCode.Gameplay.Pools;
 /// </summary>
 public static class PillPoolCatalog
 {
-    public static IReadOnlyList<string> MysteryPillIds { get; } = CreateIds("MYSTERY", 20);
+    public static IReadOnlyList<string> MysteryPillIds { get; } = CreateIds("MYSTERY", 13);
 
     public static IReadOnlyList<string> EffectPillIds { get; } =
         CreateIds("EFFECT", 30)

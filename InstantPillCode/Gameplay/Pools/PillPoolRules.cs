@@ -11,7 +11,7 @@ public static class PillPoolRules
 {
     public const int SchemaVersion = 2;
 
-    // There are currently 20 mystery pill models. Each active mystery slot receives
+    // There are currently 13 mystery pill models. Each active mystery slot receives
     // exactly one distinct candidate effect over the course of a run.
     public const int PoolSize = 13;
 
