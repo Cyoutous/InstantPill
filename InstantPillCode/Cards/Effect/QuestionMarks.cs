@@ -11,9 +11,11 @@ namespace InstantPill.InstantPillCode.Cards.Effect;
 /// A grade-1 pill whose actual effect is selected and played by
 /// <see cref="Gameplay.Effects.QuestionMarksPlaySubstitutionPatch"/>.
 /// </summary>
-[CustomID("INSTANTPILL-QUESTION_MARKS")]
+[CustomID(CardId)]
 public sealed class QuestionMarks : BaseEffectPillCard
 {
+    public const string CardId = "INSTANTPILL-QUESTION_MARKS";
+
     private static readonly string[] SoundPaths =
     [
         "res://audio/___-3.wav",

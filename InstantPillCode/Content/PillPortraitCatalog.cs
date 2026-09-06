@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using InstantPill.InstantPillCode.Cards.Effect;
 using InstantPill.InstantPillCode.Gameplay.Pools;
 using MegaCrit.Sts2.Core.Models;
 
@@ -10,6 +11,8 @@ namespace InstantPill.InstantPillCode.Content;
 /// <summary>
 /// Defines the packaged portrait resources for pills and resolves the run-local portrait used by
 /// an identified effect pill. Effect cards deliberately borrow the mapped mystery pill's image.
+/// If Question Marks is present in this run's effect pool, off-pool proxy effects borrow its
+/// mystery image as well.
 /// </summary>
 public static class PillPortraitCatalog
 {
@@ -49,8 +52,10 @@ public static class PillPortraitCatalog
     }
 
     /// <summary>
-    /// Resolves an effect card's portrait without changing run state. Canonical/library cards and
-    /// effects outside this player's pool use the neutral fallback image.
+    /// Resolves an effect card's portrait without changing run state. Canonical/library cards use
+    /// the neutral fallback image. Effects outside this player's pool borrow Question Marks'
+    /// mapped mystery image whenever it is one of this run's candidate effects; this keeps a
+    /// Question Marks proxy play visually coherent without mutating either pool.
     /// </summary>
     public static string GetEffectPortraitPath(CardModel effectPill)
     {
@@ -62,9 +67,17 @@ public static class PillPortraitCatalog
         string? mysteryPillId = PillPoolService.TryGetMysteryPillIdForAssignedEffect(
             effectPill.Owner,
             effectPill.Id.Entry);
-        return mysteryPillId == null
+        if (mysteryPillId != null)
+        {
+            return GetMysteryPortraitPath(mysteryPillId);
+        }
+
+        string? questionMarksMysteryPillId = PillPoolService.TryGetMysteryPillIdForAssignedEffect(
+            effectPill.Owner,
+            QuestionMarks.CardId);
+        return questionMarksMysteryPillId == null
             ? UsePackagedPortraitOrMissing(DefaultEffectPortraitPath)
-            : GetMysteryPortraitPath(mysteryPillId);
+            : GetMysteryPortraitPath(questionMarksMysteryPillId);
     }
 
     private static string UsePackagedPortraitOrMissing(string portraitPath) =>

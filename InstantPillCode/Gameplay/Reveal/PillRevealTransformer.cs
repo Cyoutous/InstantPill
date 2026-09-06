@@ -21,10 +21,15 @@ internal static class PillRevealTransformer
     public static async Task<CardModel> TransformAllCopies(
         Player player,
         CardModel playedMystery,
-        string effectCardId)
+        string effectCardId,
+        string? playedEffectCardId = null)
     {
         CardModel canonicalEffect = ModelDb.GetById<CardModel>(
             new ModelId(ModelId.SlugifyCategory<CardModel>(), effectCardId));
+        CardModel canonicalPlayedEffect = playedEffectCardId == null
+            ? canonicalEffect
+            : ModelDb.GetById<CardModel>(
+                new ModelId(ModelId.SlugifyCategory<CardModel>(), playedEffectCardId));
         string mysteryCardId = playedMystery.Id.Entry;
 
         Dictionary<CardModel, CardModel> deckReplacements = await TransformDeckCopies(
@@ -36,6 +41,7 @@ internal static class PillRevealTransformer
             playedMystery,
             mysteryCardId,
             canonicalEffect,
+            canonicalPlayedEffect,
             deckReplacements);
 
         return playedEffect ?? throw new InvalidOperationException(
@@ -76,6 +82,7 @@ internal static class PillRevealTransformer
         CardModel playedMystery,
         string mysteryCardId,
         CardModel canonicalEffect,
+        CardModel canonicalPlayedEffect,
         IReadOnlyDictionary<CardModel, CardModel> deckReplacements)
     {
         PlayerCombatState? playerCombatState = player.PlayerCombatState;
@@ -93,7 +100,9 @@ internal static class PillRevealTransformer
         {
             ICardScope scope = combatCopy.CardScope
                 ?? throw new InvalidOperationException($"InstantPill card {combatCopy.Id.Entry} has no card scope.");
-            CardModel replacement = scope.CreateCard(canonicalEffect, player);
+            CardModel replacement = scope.CreateCard(
+                ReferenceEquals(combatCopy, playedMystery) ? canonicalPlayedEffect : canonicalEffect,
+                player);
 
             if (combatCopy.DeckVersion != null && deckReplacements.TryGetValue(combatCopy.DeckVersion, out CardModel? deckReplacement))
             {

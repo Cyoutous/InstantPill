@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Threading;
 using BaseLib.Utils;
 using HarmonyLib;
 using InstantPill.InstantPillCode.Cards.Effect;
@@ -20,22 +21,49 @@ namespace InstantPill.InstantPillCode.Gameplay.Effects;
 /// </summary>
 public static class CapsuleUsageHistory
 {
+    private static readonly AsyncLocal<int> ProxyPlaySuppressionDepth = new();
+
     public static SavedSpireField<Player, string> LastNonVurpCapsuleId { get; } =
         new(_ => string.Empty, "instant_pill_last_non_vurp_capsule");
 
     public static void Record(CardModel card)
     {
-        if (!card.Keywords.Contains(InstantPillKeywords.Capsule)
-            || string.Equals(card.Id.Entry, Vurp.CardId, StringComparison.Ordinal))
+        if (IsProxyPlayHistorySuppressed || !card.Keywords.Contains(InstantPillKeywords.Capsule))
         {
             return;
         }
 
-        LastNonVurpCapsuleId.Set(card.Owner, card.Id.Entry);
+        Record(card.Owner, card.Id.Entry);
+    }
+
+    /// <summary>
+    /// Records a known capsule identity after a proxy flow has completed. This is used by
+    /// Question Marks, whose visible gameplay is executed by a temporary replacement card.
+    /// </summary>
+    public static void Record(Player player, string capsuleId)
+    {
+        if (string.Equals(capsuleId, Vurp.CardId, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        LastNonVurpCapsuleId.Set(player, capsuleId);
         MainFile.Logger.Info(
-            $"Recorded {card.Id.Entry} as the last non-Vurp capsule for player {card.Owner.NetId}.",
+            $"Recorded {capsuleId} as the last non-Vurp capsule for player {player.NetId}.",
             1);
     }
+
+    /// <summary>
+    /// Prevents a Question Marks replacement card from overwriting the identity of the capsule
+    /// which asked it to execute. AsyncLocal keeps the scope local to this play chain.
+    /// </summary>
+    public static IDisposable SuppressProxyPlayHistory()
+    {
+        ProxyPlaySuppressionDepth.Value++;
+        return new ProxyPlayHistorySuppressionScope();
+    }
+
+    private static bool IsProxyPlayHistorySuppressed => ProxyPlaySuppressionDepth.Value > 0;
 
     /// <summary>
     /// Produces a combat-only copy of the last recorded capsule. If no capsule has been recorded,
@@ -53,6 +81,22 @@ public static class CapsuleUsageHistory
         CardModel canonicalCard = ModelDb.GetById<CardModel>(
             new ModelId(ModelId.SlugifyCategory<CardModel>(), cardId));
         return combatState.CreateCard(canonicalCard, player);
+    }
+
+    private sealed class ProxyPlayHistorySuppressionScope : IDisposable
+    {
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+            ProxyPlaySuppressionDepth.Value = Math.Max(0, ProxyPlaySuppressionDepth.Value - 1);
+        }
     }
 }
 

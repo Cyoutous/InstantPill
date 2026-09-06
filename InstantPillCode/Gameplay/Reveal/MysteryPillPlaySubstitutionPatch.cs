@@ -1,8 +1,13 @@
+using System;
 using System.Threading.Tasks;
 using HarmonyLib;
+using InstantPill.InstantPillCode.Audio;
+using InstantPill.InstantPillCode.Cards.Effect;
 using InstantPill.InstantPillCode.Content;
+using InstantPill.InstantPillCode.Gameplay.Effects;
 using InstantPill.InstantPillCode.Gameplay.Pools;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -70,11 +75,29 @@ internal static class MysteryPillPlaySubstitutionPatch
         // needed for the saved mapping before that happens.
         var owner = mysteryCard.Owner;
         string mysteryCardId = mysteryCard.Id.Entry;
+        string playedEffectCardId = effectCardId;
+        bool isQuestionMarks = string.Equals(effectCardId, QuestionMarks.CardId, StringComparison.Ordinal);
+        if (isQuestionMarks)
+        {
+            if (!QuestionMarksPlaySubstitutionPatch.TrySelectRandomEffect(
+                    owner,
+                    QuestionMarks.CardId,
+                    out playedEffectCardId))
+            {
+                throw new InvalidOperationException("InstantPill could not find a proxy effect for Question Marks.");
+            }
+
+            if (LocalContext.IsMine(mysteryCard))
+            {
+                QuestionMarks.PlayRandomSound();
+            }
+        }
 
         CardModel effectCard = await PillRevealTransformer.TransformAllCopies(
             owner,
             mysteryCard,
-            effectCardId);
+            effectCardId,
+            playedEffectCardId);
 
         // Transforming a Play-pile model deliberately has no built-in on-table transform VFX.
         // Rebind the existing card node so the same card that was clicked immediately displays
@@ -90,6 +113,22 @@ internal static class MysteryPillPlaySubstitutionPatch
         {
             throw new System.InvalidOperationException(
                 $"InstantPill activated {activatedEffectId ?? "no effect"} after preparing {effectCardId}.");
+        }
+
+        if (isQuestionMarks)
+        {
+            using (PillAudio.SuppressCustomCardSounds())
+            using (CapsuleUsageHistory.SuppressProxyPlayHistory())
+            {
+                await effectCard.OnPlayWrapper(
+                    choiceContext,
+                    target,
+                    isAutoPlay,
+                    resources,
+                    skipCardPileVisuals);
+            }
+            CapsuleUsageHistory.Record(owner, QuestionMarks.CardId);
+            return;
         }
 
         await effectCard.OnPlayWrapper(
