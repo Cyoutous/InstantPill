@@ -50,8 +50,8 @@ public static class PillRewardService
     }
 
     /// <summary>
-    /// Applies the independent-drop and potion-replacement channels to one already-generated
-    /// combat reward list. Each channel may add one separate capsule reward.
+    /// Applies independent generation attempts, guaranteed independent reward floors, and the
+    /// separate potion-replacement channel to an already-generated combat reward list.
     /// </summary>
     public static void AddCombatRewards(Player player, List<Reward> rewards, AbstractRoom? room)
     {
@@ -67,7 +67,20 @@ public static class PillRewardService
         }
 
         HashSet<string> offeredCardIds = new(StringComparer.Ordinal);
-        if (RollIndependent(player, state, room.RoomType))
+        int successfulIndependentRolls = 0;
+        int independentAttemptCount = GetIndependentAttemptCount(state.Rules, room.RoomType);
+        for (int attemptIndex = 0; attemptIndex < independentAttemptCount; attemptIndex++)
+        {
+            if (RollIndependent(player, state, room.RoomType))
+            {
+                successfulIndependentRolls++;
+            }
+        }
+
+        int independentRewardCount = Math.Max(
+            successfulIndependentRolls,
+            GetGuaranteedRewardCount(state.Rules, room.RoomType));
+        for (int rewardIndex = 0; rewardIndex < independentRewardCount; rewardIndex++)
         {
             PillCardReward? reward = CreatePillReward(player, state, room.RoomType, offeredCardIds);
             if (reward != null)
@@ -230,6 +243,22 @@ public static class PillRewardService
         RoomType.Monster => rules.NormalChoiceCount,
         RoomType.Elite => rules.EliteChoiceCount,
         RoomType.Boss => rules.BossChoiceCount,
+        _ => throw new ArgumentOutOfRangeException(nameof(roomType), roomType, null)
+    };
+
+    private static int GetIndependentAttemptCount(PillRewardRulesSnapshot rules, RoomType roomType) => roomType switch
+    {
+        RoomType.Monster => rules.NormalGenerationAttempts,
+        RoomType.Elite => rules.EliteGenerationAttempts,
+        RoomType.Boss => rules.BossGenerationAttempts,
+        _ => throw new ArgumentOutOfRangeException(nameof(roomType), roomType, null)
+    };
+
+    private static int GetGuaranteedRewardCount(PillRewardRulesSnapshot rules, RoomType roomType) => roomType switch
+    {
+        RoomType.Monster => rules.NormalGuaranteedRewardCount,
+        RoomType.Elite => rules.EliteGuaranteedRewardCount,
+        RoomType.Boss => rules.BossGuaranteedRewardCount,
         _ => throw new ArgumentOutOfRangeException(nameof(roomType), roomType, null)
     };
 

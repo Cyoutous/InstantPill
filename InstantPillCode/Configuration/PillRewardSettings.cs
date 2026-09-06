@@ -81,6 +81,12 @@ public static class PillRewardSettings
         NormalChoiceCountKey => _data.NormalChoiceCount,
         EliteChoiceCountKey => _data.EliteChoiceCount,
         BossChoiceCountKey => _data.BossChoiceCount,
+        NormalGenerationAttemptsKey => _data.NormalGenerationAttempts,
+        EliteGenerationAttemptsKey => _data.EliteGenerationAttempts,
+        BossGenerationAttemptsKey => _data.BossGenerationAttempts,
+        NormalGuaranteedRewardCountKey => _data.NormalGuaranteedRewardCount,
+        EliteGuaranteedRewardCountKey => _data.EliteGuaranteedRewardCount,
+        BossGuaranteedRewardCountKey => _data.BossGuaranteedRewardCount,
         EnableNormalRewardsKey => _data.EnableNormalRewards,
         EnableEliteRewardsKey => _data.EnableEliteRewards,
         EnableBossRewardsKey => _data.EnableBossRewards,
@@ -134,6 +140,12 @@ public static class PillRewardSettings
             case NormalChoiceCountKey: _data.NormalChoiceCount = integerValue; break;
             case EliteChoiceCountKey: _data.EliteChoiceCount = integerValue; break;
             case BossChoiceCountKey: _data.BossChoiceCount = integerValue; break;
+            case NormalGenerationAttemptsKey: _data.NormalGenerationAttempts = integerValue; break;
+            case EliteGenerationAttemptsKey: _data.EliteGenerationAttempts = integerValue; break;
+            case BossGenerationAttemptsKey: _data.BossGenerationAttempts = integerValue; break;
+            case NormalGuaranteedRewardCountKey: _data.NormalGuaranteedRewardCount = integerValue; break;
+            case EliteGuaranteedRewardCountKey: _data.EliteGuaranteedRewardCount = integerValue; break;
+            case BossGuaranteedRewardCountKey: _data.BossGuaranteedRewardCount = integerValue; break;
             default: return false;
         }
 
@@ -165,6 +177,12 @@ public static class PillRewardSettings
             NormalChoiceCount = _data.NormalChoiceCount,
             EliteChoiceCount = _data.EliteChoiceCount,
             BossChoiceCount = _data.BossChoiceCount,
+            NormalGenerationAttempts = _data.NormalGenerationAttempts,
+            EliteGenerationAttempts = _data.EliteGenerationAttempts,
+            BossGenerationAttempts = _data.BossGenerationAttempts,
+            NormalGuaranteedRewardCount = _data.NormalGuaranteedRewardCount,
+            EliteGuaranteedRewardCount = _data.EliteGuaranteedRewardCount,
+            BossGuaranteedRewardCount = _data.BossGuaranteedRewardCount,
             EnableNormalRewards = _data.EnableNormalRewards,
             EnableEliteRewards = _data.EnableEliteRewards,
             EnableBossRewards = _data.EnableBossRewards,
@@ -214,6 +232,12 @@ public static class PillRewardSettings
             NormalChoiceCount = defaults.NormalChoiceCount,
             EliteChoiceCount = defaults.EliteChoiceCount,
             BossChoiceCount = defaults.BossChoiceCount,
+            NormalGenerationAttempts = defaults.NormalGenerationAttempts,
+            EliteGenerationAttempts = defaults.EliteGenerationAttempts,
+            BossGenerationAttempts = defaults.BossGenerationAttempts,
+            NormalGuaranteedRewardCount = defaults.NormalGuaranteedRewardCount,
+            EliteGuaranteedRewardCount = defaults.EliteGuaranteedRewardCount,
+            BossGuaranteedRewardCount = defaults.BossGuaranteedRewardCount,
             EnableNormalRewards = defaults.EnableNormalRewards,
             EnableEliteRewards = defaults.EnableEliteRewards,
             EnableBossRewards = defaults.EnableBossRewards,
@@ -244,6 +268,12 @@ public static class PillRewardSettings
         _data.NormalChoiceCount = Math.Clamp(_data.NormalChoiceCount, 1, 20);
         _data.EliteChoiceCount = Math.Clamp(_data.EliteChoiceCount, 1, 20);
         _data.BossChoiceCount = Math.Clamp(_data.BossChoiceCount, 1, 20);
+        _data.NormalGenerationAttempts = Math.Clamp(_data.NormalGenerationAttempts, 0, 20);
+        _data.EliteGenerationAttempts = Math.Clamp(_data.EliteGenerationAttempts, 0, 20);
+        _data.BossGenerationAttempts = Math.Clamp(_data.BossGenerationAttempts, 0, 20);
+        _data.NormalGuaranteedRewardCount = Math.Clamp(_data.NormalGuaranteedRewardCount, 0, 20);
+        _data.EliteGuaranteedRewardCount = Math.Clamp(_data.EliteGuaranteedRewardCount, 0, 20);
+        _data.BossGuaranteedRewardCount = Math.Clamp(_data.BossGuaranteedRewardCount, 0, 20);
     }
 
     private static void NormalizeOdds(
@@ -319,6 +349,12 @@ public static class PillRewardSettings
     public const string NormalChoiceCountKey = "normal_choice_count";
     public const string EliteChoiceCountKey = "elite_choice_count";
     public const string BossChoiceCountKey = "boss_choice_count";
+    public const string NormalGenerationAttemptsKey = "normal_generation_attempts";
+    public const string EliteGenerationAttemptsKey = "elite_generation_attempts";
+    public const string BossGenerationAttemptsKey = "boss_generation_attempts";
+    public const string NormalGuaranteedRewardCountKey = "normal_guaranteed_reward_count";
+    public const string EliteGuaranteedRewardCountKey = "elite_guaranteed_reward_count";
+    public const string BossGuaranteedRewardCountKey = "boss_guaranteed_reward_count";
     public const string EnableNormalRewardsKey = "enable_normal_rewards";
     public const string EnableEliteRewardsKey = "enable_elite_rewards";
     public const string EnableBossRewardsKey = "enable_boss_rewards";
@@ -331,6 +367,8 @@ public static class PillRewardSettings
         ReplacementBaseOddsKey, ReplacementSuccessDecreaseKey, ReplacementFailureIncreaseKey,
         ReplacementEliteBonusKey, ReplacementBossBonusKey, ReplacementMinimumOddsKey, ReplacementMaximumOddsKey,
         NormalChoiceCountKey, EliteChoiceCountKey, BossChoiceCountKey,
+        NormalGenerationAttemptsKey, EliteGenerationAttemptsKey, BossGenerationAttemptsKey,
+        NormalGuaranteedRewardCountKey, EliteGuaranteedRewardCountKey, BossGuaranteedRewardCountKey,
         EnableNormalRewardsKey, EnableEliteRewardsKey, EnableBossRewardsKey, PreventDuplicateOptionsKey
     ];
 }
@@ -354,6 +392,12 @@ public sealed class PillRewardSettingsData
     public int NormalChoiceCount;
     public int EliteChoiceCount;
     public int BossChoiceCount;
+    public int NormalGenerationAttempts;
+    public int EliteGenerationAttempts;
+    public int BossGenerationAttempts;
+    public int NormalGuaranteedRewardCount;
+    public int EliteGuaranteedRewardCount;
+    public int BossGuaranteedRewardCount;
     public bool EnableNormalRewards;
     public bool EnableEliteRewards;
     public bool EnableBossRewards;

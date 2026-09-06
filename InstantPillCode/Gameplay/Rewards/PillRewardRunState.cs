@@ -6,7 +6,7 @@ namespace InstantPill.InstantPillCode.Gameplay.Rewards;
 /// <summary>Per-player persisted state for InstantPill's two independent reward pity systems.</summary>
 public sealed class PillRewardRunState : IPacketSerializable
 {
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = 2;
 
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
 
@@ -56,6 +56,12 @@ public sealed class PillRewardRunState : IPacketSerializable
         writer.WriteInt(rules.NormalChoiceCount);
         writer.WriteInt(rules.EliteChoiceCount);
         writer.WriteInt(rules.BossChoiceCount);
+        writer.WriteInt(rules.NormalGenerationAttempts);
+        writer.WriteInt(rules.EliteGenerationAttempts);
+        writer.WriteInt(rules.BossGenerationAttempts);
+        writer.WriteInt(rules.NormalGuaranteedRewardCount);
+        writer.WriteInt(rules.EliteGuaranteedRewardCount);
+        writer.WriteInt(rules.BossGuaranteedRewardCount);
         writer.WriteBool(rules.EnableNormalRewards);
         writer.WriteBool(rules.EnableEliteRewards);
         writer.WriteBool(rules.EnableBossRewards);
@@ -69,6 +75,12 @@ public sealed class PillRewardRunState : IPacketSerializable
         NormalChoiceCount = reader.ReadInt(),
         EliteChoiceCount = reader.ReadInt(),
         BossChoiceCount = reader.ReadInt(),
+        NormalGenerationAttempts = reader.ReadInt(),
+        EliteGenerationAttempts = reader.ReadInt(),
+        BossGenerationAttempts = reader.ReadInt(),
+        NormalGuaranteedRewardCount = reader.ReadInt(),
+        EliteGuaranteedRewardCount = reader.ReadInt(),
+        BossGuaranteedRewardCount = reader.ReadInt(),
         EnableNormalRewards = reader.ReadBool(),
         EnableEliteRewards = reader.ReadBool(),
         EnableBossRewards = reader.ReadBool(),

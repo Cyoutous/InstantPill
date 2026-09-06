@@ -12,8 +12,8 @@ public static class PillRewardDefaults
     {
         IndependentDrop = new PillOddsRules
         {
-            BaseOdds = 0.45f,
-            SuccessDecrease = 0.25f,
+            BaseOdds = 0.75f,
+            SuccessDecrease = 0.15f,
             FailureIncrease = 0.35f,
             EliteBonus = 0.15f,
             BossBonus = 0.25f,
@@ -23,16 +23,22 @@ public static class PillRewardDefaults
         PotionReplacement = new PillOddsRules
         {
             BaseOdds = 0.05f,
-            SuccessDecrease = 0.025f,
-            FailureIncrease = 0.025f,
-            EliteBonus = 0.05f,
-            BossBonus = 0.025f,
+            SuccessDecrease = 0.2f,
+            FailureIncrease = 0.15f,
+            EliteBonus = 0.1f,
+            BossBonus = 0.2f,
             MinimumOdds = 0f,
             MaximumOdds = 1f
         },
-        NormalChoiceCount = 3,
+        NormalChoiceCount = 2,
         EliteChoiceCount = 3,
-        BossChoiceCount = 3,
+        BossChoiceCount = 4,
+        NormalGenerationAttempts = 1,
+        EliteGenerationAttempts = 2,
+        BossGenerationAttempts = 3,
+        NormalGuaranteedRewardCount = 0,
+        EliteGuaranteedRewardCount = 1,
+        BossGuaranteedRewardCount = 2,
         EnableNormalRewards = true,
         EnableEliteRewards = true,
         EnableBossRewards = true,
@@ -93,6 +99,20 @@ public sealed class PillRewardRulesSnapshot
 
     public int BossChoiceCount { get; set; }
 
+    /// <summary>Independent capsule reward probability rolls performed in each room type.</summary>
+    public int NormalGenerationAttempts { get; set; }
+
+    public int EliteGenerationAttempts { get; set; }
+
+    public int BossGenerationAttempts { get; set; }
+
+    /// <summary>Minimum independent capsule reward panels granted in each room type.</summary>
+    public int NormalGuaranteedRewardCount { get; set; }
+
+    public int EliteGuaranteedRewardCount { get; set; }
+
+    public int BossGuaranteedRewardCount { get; set; }
+
     public bool EnableNormalRewards { get; set; }
 
     public bool EnableEliteRewards { get; set; }
@@ -108,6 +128,12 @@ public sealed class PillRewardRulesSnapshot
         NormalChoiceCount = NormalChoiceCount,
         EliteChoiceCount = EliteChoiceCount,
         BossChoiceCount = BossChoiceCount,
+        NormalGenerationAttempts = NormalGenerationAttempts,
+        EliteGenerationAttempts = EliteGenerationAttempts,
+        BossGenerationAttempts = BossGenerationAttempts,
+        NormalGuaranteedRewardCount = NormalGuaranteedRewardCount,
+        EliteGuaranteedRewardCount = EliteGuaranteedRewardCount,
+        BossGuaranteedRewardCount = BossGuaranteedRewardCount,
         EnableNormalRewards = EnableNormalRewards,
         EnableEliteRewards = EnableEliteRewards,
         EnableBossRewards = EnableBossRewards,
@@ -121,5 +147,11 @@ public sealed class PillRewardRulesSnapshot
         NormalChoiceCount = Math.Clamp(NormalChoiceCount, 1, maximumChoices);
         EliteChoiceCount = Math.Clamp(EliteChoiceCount, 1, maximumChoices);
         BossChoiceCount = Math.Clamp(BossChoiceCount, 1, maximumChoices);
+        NormalGenerationAttempts = Math.Clamp(NormalGenerationAttempts, 0, maximumChoices);
+        EliteGenerationAttempts = Math.Clamp(EliteGenerationAttempts, 0, maximumChoices);
+        BossGenerationAttempts = Math.Clamp(BossGenerationAttempts, 0, maximumChoices);
+        NormalGuaranteedRewardCount = Math.Clamp(NormalGuaranteedRewardCount, 0, maximumChoices);
+        EliteGuaranteedRewardCount = Math.Clamp(EliteGuaranteedRewardCount, 0, maximumChoices);
+        BossGuaranteedRewardCount = Math.Clamp(BossGuaranteedRewardCount, 0, maximumChoices);
     }
 }
