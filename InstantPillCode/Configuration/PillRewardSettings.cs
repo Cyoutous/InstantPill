@@ -11,7 +11,8 @@ namespace InstantPill.InstantPillCode.Configuration;
 /// </summary>
 public static class PillRewardSettings
 {
-    private const string SavePath = "user://InstantPill/reward_settings.cfg";
+    private const string SaveDirectory = "user://InstantPill";
+    private const string SavePath = SaveDirectory + "/reward_settings.cfg";
     private const string Section = "reward_rules";
 
     private static PillRewardSettingsData _data = CreateDefaultData();
@@ -39,6 +40,14 @@ public static class PillRewardSettings
     public static void Save()
     {
         Normalize();
+
+        Error directoryResult = DirAccess.MakeDirRecursiveAbsolute(SaveDirectory);
+        if (directoryResult != Error.Ok)
+        {
+            MainFile.Logger.Warn($"InstantPill could not create the reward-settings directory ({directoryResult}).");
+            return;
+        }
+
         ConfigFile config = new();
         foreach (string key in AllKeys)
         {

@@ -15,6 +15,13 @@ namespace InstantPill.InstantPillCode.Cards.Effect;
 public abstract class BaseEffectPillCard : BasePillCard
 {
     /// <summary>
+    /// Identified effect pills use the combat consume visual in place of the normal Power-card
+    /// flight. Mystery pills deliberately do not inherit this marker, so they retain the base
+    /// Power presentation until they reveal into an effect pill.
+    /// </summary>
+    public virtual bool UsesEffectPillConsumeVfx => true;
+
+    /// <summary>
     /// Internal balance metadata used only when constructing a run's candidate-effect pool.
     /// It intentionally has no localization, keyword, or card-facing representation.
     /// </summary>

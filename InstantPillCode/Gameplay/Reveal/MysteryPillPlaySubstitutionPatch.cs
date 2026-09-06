@@ -2,10 +2,12 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using InstantPill.InstantPillCode.Content;
 using InstantPill.InstantPillCode.Gameplay.Pools;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Cards;
 
 namespace InstantPill.InstantPillCode.Gameplay.Reveal;
 
@@ -58,6 +60,12 @@ internal static class MysteryPillPlaySubstitutionPatch
         ResourceInfo resources,
         bool skipCardPileVisuals)
     {
+        // Place the selected mystery card in Play before transforming it. CardCmd.Transform has
+        // special cancellation logic for a Hand card that is still queued for play; transforming
+        // after this step keeps the replacement in Play and prevents the visible hand round-trip.
+        await MoveMysteryToPlayPile(mysteryCard, isAutoPlay, skipCardPileVisuals);
+        NCard? playNode = NCard.FindOnTable(mysteryCard);
+
         // CardCmd.Transform removes the original CardModel from its scope. Keep the identity
         // needed for the saved mapping before that happens.
         var owner = mysteryCard.Owner;
@@ -67,6 +75,15 @@ internal static class MysteryPillPlaySubstitutionPatch
             owner,
             mysteryCard,
             effectCardId);
+
+        // Transforming a Play-pile model deliberately has no built-in on-table transform VFX.
+        // Rebind the existing card node so the same card that was clicked immediately displays
+        // the revealed effect and can receive that effect pill's consume VFX during cleanup.
+        if (playNode != null)
+        {
+            playNode.Model = effectCard;
+            playNode.UpdateVisuals(PileType.Play, CardPreviewMode.Normal);
+        }
 
         string? activatedEffectId = PillPoolService.ActivateMysteryPill(owner, mysteryCardId);
         if (activatedEffectId != effectCardId)
@@ -81,5 +98,29 @@ internal static class MysteryPillPlaySubstitutionPatch
             isAutoPlay,
             resources,
             skipCardPileVisuals);
+    }
+
+    private static async Task MoveMysteryToPlayPile(
+        CardModel mysteryCard,
+        bool isAutoPlay,
+        bool skipCardPileVisuals)
+    {
+        if (!isAutoPlay)
+        {
+            await CardPileCmd.AddDuringManualCardPlay(mysteryCard);
+            return;
+        }
+
+        await CardPileCmd.Add(
+            mysteryCard,
+            PileType.Play,
+            CardPilePosition.Bottom,
+            clonedBy: null,
+            skipVisuals: skipCardPileVisuals);
+
+        if (!skipCardPileVisuals)
+        {
+            await Cmd.CustomScaledWait(0.25f, 0.35f);
+        }
     }
 }

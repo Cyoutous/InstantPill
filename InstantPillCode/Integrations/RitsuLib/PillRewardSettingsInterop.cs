@@ -28,16 +28,27 @@ public static class PillRewardSettingsInterop
 
     private static void SetValue(string key, object? value)
     {
-        if (!PillRewardSettings.TrySet(key, value))
+        if (PillRewardSettings.TrySet(key, value))
         {
-            MainFile.Logger.Warn($"InstantPill ignored invalid RitsuLib setting '{key}'.");
+            // Runtime-schema settings are not guaranteed to receive a deferred save callback
+            // on every RitsuLib version. Persist immediately so a slider change survives restart.
+            PillRewardSettings.Save();
+            return;
         }
+
+        MainFile.Logger.Warn($"InstantPill ignored invalid RitsuLib setting '{key}'.");
     }
 
     public static void SaveRitsuLibSettings() => PillRewardSettings.Save();
 
     public static void InvokeRitsuLibSettingAction(string key)
     {
+        if (key == "save_settings")
+        {
+            PillRewardSettings.Save();
+            return;
+        }
+
         if (key != "reset_defaults")
         {
             return;

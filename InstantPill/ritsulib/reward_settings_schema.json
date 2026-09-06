@@ -51,6 +51,7 @@
             { "id": "enable_boss_rewards", "type": "toggle", "key": "enable_boss_rewards", "label": { "langMap": { "zhs": "首领战启用掉落", "en": "Enable boss rewards" }, "fallback": "Enable boss rewards" }, "defaultValue": true, "scope": "global" },
             { "id": "prevent_duplicate_options", "type": "toggle", "key": "prevent_duplicate_options", "label": { "langMap": { "zhs": "同场胶囊选项不重复", "en": "Avoid duplicate pill options in one combat" }, "fallback": "Avoid duplicate pill options in one combat" }, "defaultValue": false, "scope": "global" },
             { "id": "next_run_notice", "type": "info-card", "label": { "langMap": { "zhs": "说明", "en": "Note" }, "fallback": "Note" }, "body": { "langMap": { "zhs": "设置将在下一局新开局时生效；正在进行的局会保留开局时的规则。", "en": "Changes apply to the next new run. A current run keeps its saved rules." }, "fallback": "Changes apply to the next new run." } },
+            { "id": "save_settings", "type": "button", "key": "save_settings", "label": { "langMap": { "zhs": "保存当前设置", "en": "Save current settings" }, "fallback": "Save current settings" }, "buttonText": { "langMap": { "zhs": "保存", "en": "Save" }, "fallback": "Save" }, "tone": "accent" },
             { "id": "reset_defaults", "type": "button", "key": "reset_defaults", "label": { "langMap": { "zhs": "恢复默认值", "en": "Restore defaults" }, "fallback": "Restore defaults" }, "buttonText": { "langMap": { "zhs": "恢复默认值", "en": "Restore defaults" }, "fallback": "Restore defaults" }, "tone": "accent" }
           ]
         }

@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using HarmonyLib;
+using InstantPill.InstantPillCode.Cards.Effect;
 using InstantPill.InstantPillCode.Content;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -85,22 +86,21 @@ internal static class CapsuleKeywordBehaviorPatch
 }
 
 /// <summary>
-/// Capsule cards retain their Power type for their card frame and mechanical interactions, but do
-/// not use the Power card's fly-to-creature animation when played. This targets the async state
-/// machine rather than changing CardModel.Type, so its result-pile behaviour stays untouched.
+/// Only identified effect pills replace the native Power-card flight. Mystery pills remain
+/// ordinary Power cards until their reveal flow starts an identified effect card's play wrapper.
 /// </summary>
 [HarmonyPatch]
-internal static class CapsulePowerPlayVfxPatch
+internal static class EffectPillPowerPlayVfxPatch
 {
     private static MethodBase? TargetMethod() => AccessTools.AsyncMoveNext(
         AccessTools.Method(typeof(CardModel), nameof(CardModel.OnPlayWrapper)));
 
     [HarmonyTranspiler]
-    private static IEnumerable<CodeInstruction> SkipPowerFlyVfxForCapsules(
+    private static IEnumerable<CodeInstruction> SkipPowerFlyVfxForEffectPills(
         IEnumerable<CodeInstruction> instructions)
     {
         MethodInfo typeGetter = AccessTools.PropertyGetter(typeof(CardModel), nameof(CardModel.Type));
-        MethodInfo replacement = AccessTools.Method(typeof(CapsulePowerPlayVfxPatch), nameof(ShouldPlayPowerFlyVfx));
+        MethodInfo replacement = AccessTools.Method(typeof(EffectPillPowerPlayVfxPatch), nameof(ShouldPlayPowerFlyVfx));
         bool replaced = false;
 
         foreach (CodeInstruction instruction in instructions)
@@ -122,16 +122,19 @@ internal static class CapsulePowerPlayVfxPatch
     }
 
     private static bool ShouldPlayPowerFlyVfx(CardModel card) =>
-        card.Type == CardType.Power && !CapsuleKeywordBehaviorPatch.IsCapsule(card);
+        card.Type == CardType.Power && !UsesEffectPillConsumeVfx(card);
+
+    internal static bool UsesEffectPillConsumeVfx(CardModel card) =>
+        card is BaseEffectPillCard effectPill && effectPill.UsesEffectPillConsumeVfx;
 }
 
 /// <summary>
-/// The base removal code deliberately skips the card-node removal VFX for Power cards played from
-/// the play pile. Treat capsules as non-Power only at that visual branch, letting the original
-/// NExhaustVfx / thin-slice removal path process their existing card node.
+/// The native combat-removal path intentionally suppresses its consume visual for played Power
+/// cards. At that visual-only branch, present identified effect pills as Skills so the existing
+/// NExhaustVfx path runs. Their actual CardType and all gameplay interactions remain Power.
 /// </summary>
 [HarmonyPatch]
-internal static class CapsuleThinSliceRemovalVfxPatch
+internal static class EffectPillConsumeVfxPatch
 {
     private static MethodBase? TargetMethod() => AccessTools.AsyncMoveNext(
         AccessTools.Method(
@@ -140,11 +143,11 @@ internal static class CapsuleThinSliceRemovalVfxPatch
             [typeof(IEnumerable<CardModel>), typeof(bool)]));
 
     [HarmonyTranspiler]
-    private static IEnumerable<CodeInstruction> EnableThinSliceForCapsules(
+    private static IEnumerable<CodeInstruction> EnableConsumeVfxForEffectPills(
         IEnumerable<CodeInstruction> instructions)
     {
         MethodInfo typeGetter = AccessTools.PropertyGetter(typeof(CardModel), nameof(CardModel.Type));
-        MethodInfo replacement = AccessTools.Method(typeof(CapsuleThinSliceRemovalVfxPatch), nameof(GetRemovalVisualType));
+        MethodInfo replacement = AccessTools.Method(typeof(EffectPillConsumeVfxPatch), nameof(GetRemovalVisualType));
         bool replaced = false;
 
         foreach (CodeInstruction instruction in instructions)
@@ -161,10 +164,10 @@ internal static class CapsuleThinSliceRemovalVfxPatch
 
         if (!replaced)
         {
-            MainFile.Logger.Error("InstantPill could not locate CardPileCmd.RemoveFromCombat's Power removal-VFX check.", 1);
+            MainFile.Logger.Error("InstantPill could not locate CardPileCmd.RemoveFromCombat's Power consume-VFX check.", 1);
         }
     }
 
     private static CardType GetRemovalVisualType(CardModel card) =>
-        CapsuleKeywordBehaviorPatch.IsCapsule(card) ? CardType.Skill : card.Type;
+        EffectPillPowerPlayVfxPatch.UsesEffectPillConsumeVfx(card) ? CardType.Skill : card.Type;
 }
