@@ -11,3 +11,9 @@ packages/
 *.user
 Directory.Build.props
 artifacts/
+# 不开源素材(本地保留)
+audio/
+InstantPill/images/
+InstantPill/mod_image.png
+InstantPill/mod_image.png.import
+*.log
