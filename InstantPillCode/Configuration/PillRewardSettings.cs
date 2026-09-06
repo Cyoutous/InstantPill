@@ -96,6 +96,7 @@ public static class PillRewardSettings
         NormalGuaranteedRewardCountKey => _data.NormalGuaranteedRewardCount,
         EliteGuaranteedRewardCountKey => _data.EliteGuaranteedRewardCount,
         BossGuaranteedRewardCountKey => _data.BossGuaranteedRewardCount,
+        InitialMysteryPillCountKey => _data.InitialMysteryPillCount,
         EnableNormalRewardsKey => _data.EnableNormalRewards,
         EnableEliteRewardsKey => _data.EnableEliteRewards,
         EnableBossRewardsKey => _data.EnableBossRewards,
@@ -155,6 +156,7 @@ public static class PillRewardSettings
             case NormalGuaranteedRewardCountKey: _data.NormalGuaranteedRewardCount = integerValue; break;
             case EliteGuaranteedRewardCountKey: _data.EliteGuaranteedRewardCount = integerValue; break;
             case BossGuaranteedRewardCountKey: _data.BossGuaranteedRewardCount = integerValue; break;
+            case InitialMysteryPillCountKey: _data.InitialMysteryPillCount = integerValue; break;
             default: return false;
         }
 
@@ -192,6 +194,7 @@ public static class PillRewardSettings
             NormalGuaranteedRewardCount = _data.NormalGuaranteedRewardCount,
             EliteGuaranteedRewardCount = _data.EliteGuaranteedRewardCount,
             BossGuaranteedRewardCount = _data.BossGuaranteedRewardCount,
+            InitialMysteryPillCount = _data.InitialMysteryPillCount,
             EnableNormalRewards = _data.EnableNormalRewards,
             EnableEliteRewards = _data.EnableEliteRewards,
             EnableBossRewards = _data.EnableBossRewards,
@@ -247,6 +250,7 @@ public static class PillRewardSettings
             NormalGuaranteedRewardCount = defaults.NormalGuaranteedRewardCount,
             EliteGuaranteedRewardCount = defaults.EliteGuaranteedRewardCount,
             BossGuaranteedRewardCount = defaults.BossGuaranteedRewardCount,
+            InitialMysteryPillCount = defaults.InitialMysteryPillCount,
             EnableNormalRewards = defaults.EnableNormalRewards,
             EnableEliteRewards = defaults.EnableEliteRewards,
             EnableBossRewards = defaults.EnableBossRewards,
@@ -283,6 +287,7 @@ public static class PillRewardSettings
         _data.NormalGuaranteedRewardCount = Math.Clamp(_data.NormalGuaranteedRewardCount, 0, 20);
         _data.EliteGuaranteedRewardCount = Math.Clamp(_data.EliteGuaranteedRewardCount, 0, 20);
         _data.BossGuaranteedRewardCount = Math.Clamp(_data.BossGuaranteedRewardCount, 0, 20);
+        _data.InitialMysteryPillCount = Math.Clamp(_data.InitialMysteryPillCount, 0, 1000);
     }
 
     private static void NormalizeOdds(
@@ -364,6 +369,7 @@ public static class PillRewardSettings
     public const string NormalGuaranteedRewardCountKey = "normal_guaranteed_reward_count";
     public const string EliteGuaranteedRewardCountKey = "elite_guaranteed_reward_count";
     public const string BossGuaranteedRewardCountKey = "boss_guaranteed_reward_count";
+    public const string InitialMysteryPillCountKey = "initial_mystery_pill_count";
     public const string EnableNormalRewardsKey = "enable_normal_rewards";
     public const string EnableEliteRewardsKey = "enable_elite_rewards";
     public const string EnableBossRewardsKey = "enable_boss_rewards";
@@ -378,6 +384,7 @@ public static class PillRewardSettings
         NormalChoiceCountKey, EliteChoiceCountKey, BossChoiceCountKey,
         NormalGenerationAttemptsKey, EliteGenerationAttemptsKey, BossGenerationAttemptsKey,
         NormalGuaranteedRewardCountKey, EliteGuaranteedRewardCountKey, BossGuaranteedRewardCountKey,
+        InitialMysteryPillCountKey,
         EnableNormalRewardsKey, EnableEliteRewardsKey, EnableBossRewardsKey, PreventDuplicateOptionsKey
     ];
 }
@@ -407,6 +414,7 @@ public sealed class PillRewardSettingsData
     public int NormalGuaranteedRewardCount;
     public int EliteGuaranteedRewardCount;
     public int BossGuaranteedRewardCount;
+    public int InitialMysteryPillCount;
     public bool EnableNormalRewards;
     public bool EnableEliteRewards;
     public bool EnableBossRewards;

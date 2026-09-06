@@ -6,9 +6,10 @@ namespace InstantPill.InstantPillCode.Gameplay.Rewards;
 /// <summary>Per-player persisted state for InstantPill's two independent reward pity systems.</summary>
 public sealed class PillRewardRunState : IPacketSerializable
 {
-    // Version 3 registers the six attempt/guarantee fields with BaseLib's persisted object
-    // schema. Older runs cannot restore those values reliably and must be restarted.
-    public const int CurrentSchemaVersion = 3;
+    // Version 4 persists the initial mystery-pill count alongside the rest of the per-run
+    // configuration snapshot. Version 3 is upgraded with zero starting pills: it represents an
+    // already-created run, so granting cards during load would be incorrect.
+    public const int CurrentSchemaVersion = 4;
 
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
 
@@ -37,10 +38,10 @@ public sealed class PillRewardRunState : IPacketSerializable
 
     public void Deserialize(PacketReader reader)
     {
-        SchemaVersion = reader.ReadInt();
-        if (SchemaVersion != CurrentSchemaVersion)
+        int serializedSchemaVersion = reader.ReadInt();
+        if (serializedSchemaVersion is not 3 and not CurrentSchemaVersion)
         {
-            throw new InvalidOperationException($"Unsupported InstantPill reward-state schema {SchemaVersion}.");
+            throw new InvalidOperationException($"Unsupported InstantPill reward-state schema {serializedSchemaVersion}.");
         }
 
         IndependentCurrentOdds = reader.ReadFloat(null);
@@ -48,7 +49,8 @@ public sealed class PillRewardRunState : IPacketSerializable
         IndependentRollCounter = reader.ReadInt();
         ReplacementRollCounter = reader.ReadInt();
         ChoiceRollCounter = reader.ReadInt();
-        Rules = DeserializeRules(reader);
+        Rules = DeserializeRules(reader, serializedSchemaVersion >= 4);
+        SchemaVersion = CurrentSchemaVersion;
     }
 
     private static void SerializeRules(PacketWriter writer, PillRewardRulesSnapshot rules)
@@ -64,13 +66,14 @@ public sealed class PillRewardRunState : IPacketSerializable
         writer.WriteInt(rules.NormalGuaranteedRewardCount);
         writer.WriteInt(rules.EliteGuaranteedRewardCount);
         writer.WriteInt(rules.BossGuaranteedRewardCount);
+        writer.WriteInt(rules.InitialMysteryPillCount);
         writer.WriteBool(rules.EnableNormalRewards);
         writer.WriteBool(rules.EnableEliteRewards);
         writer.WriteBool(rules.EnableBossRewards);
         writer.WriteBool(rules.PreventDuplicateCapsuleOptionsWithinCombat);
     }
 
-    private static PillRewardRulesSnapshot DeserializeRules(PacketReader reader) => new()
+    private static PillRewardRulesSnapshot DeserializeRules(PacketReader reader, bool hasInitialMysteryPillCount) => new()
     {
         IndependentDrop = DeserializeOdds(reader),
         PotionReplacement = DeserializeOdds(reader),
@@ -83,6 +86,7 @@ public sealed class PillRewardRunState : IPacketSerializable
         NormalGuaranteedRewardCount = reader.ReadInt(),
         EliteGuaranteedRewardCount = reader.ReadInt(),
         BossGuaranteedRewardCount = reader.ReadInt(),
+        InitialMysteryPillCount = hasInitialMysteryPillCount ? reader.ReadInt() : 0,
         EnableNormalRewards = reader.ReadBool(),
         EnableEliteRewards = reader.ReadBool(),
         EnableBossRewards = reader.ReadBool(),

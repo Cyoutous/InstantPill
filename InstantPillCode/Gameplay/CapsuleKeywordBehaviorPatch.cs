@@ -88,41 +88,25 @@ internal static class CapsuleKeywordBehaviorPatch
 /// <summary>
 /// Only identified effect pills replace the native Power-card flight. Mystery pills remain
 /// ordinary Power cards until their reveal flow starts an identified effect card's play wrapper.
+/// This deliberately patches the VFX method itself instead of rewriting OnPlayWrapper's
+/// <c>Type == CardType.Power</c> condition. That condition belongs to every Power card, so
+/// replacing its Type getter risks changing the native branch for non-mod cards when the
+/// game's generated IL changes between beta builds.
 /// </summary>
-[HarmonyPatch]
+[HarmonyPatch(typeof(CardModel), "PlayPowerCardFlyVfx")]
 internal static class EffectPillPowerPlayVfxPatch
 {
-    private static MethodBase? TargetMethod() => AccessTools.AsyncMoveNext(
-        AccessTools.Method(typeof(CardModel), nameof(CardModel.OnPlayWrapper)));
-
-    [HarmonyTranspiler]
-    private static IEnumerable<CodeInstruction> SkipPowerFlyVfxForEffectPills(
-        IEnumerable<CodeInstruction> instructions)
+    [HarmonyPrefix]
+    private static bool SkipPowerFlyVfxForEffectPills(CardModel __instance, ref Task __result)
     {
-        MethodInfo typeGetter = AccessTools.PropertyGetter(typeof(CardModel), nameof(CardModel.Type));
-        MethodInfo replacement = AccessTools.Method(typeof(EffectPillPowerPlayVfxPatch), nameof(ShouldPlayPowerFlyVfx));
-        bool replaced = false;
-
-        foreach (CodeInstruction instruction in instructions)
+        if (!UsesEffectPillConsumeVfx(__instance))
         {
-            if (!replaced && instruction.Calls(typeGetter))
-            {
-                instruction.opcode = OpCodes.Call;
-                instruction.operand = replacement;
-                replaced = true;
-            }
-
-            yield return instruction;
+            return true;
         }
 
-        if (!replaced)
-        {
-            MainFile.Logger.Error("InstantPill could not locate CardModel.OnPlayWrapper's Power-VFX check.", 1);
-        }
+        __result = Task.CompletedTask;
+        return false;
     }
-
-    private static bool ShouldPlayPowerFlyVfx(CardModel card) =>
-        card.Type == CardType.Power && !UsesEffectPillConsumeVfx(card);
 
     internal static bool UsesEffectPillConsumeVfx(CardModel card) =>
         card is BaseEffectPillCard effectPill && effectPill.UsesEffectPillConsumeVfx;

@@ -56,6 +56,20 @@
           ]
         }
       ]
-    }
+    },
+      {
+        "pageId": "starting_deck",
+        "title": { "langMap": { "zhs": "起始牌组", "en": "Starting Deck" }, "fallback": "Starting Deck" },
+        "sections": [
+          {
+            "id": "starting_mystery_pills",
+            "title": { "langMap": { "zhs": "未知胶囊", "en": "Mystery Pills" }, "fallback": "Mystery Pills" },
+            "entries": [
+              { "id": "initial_mystery_pill_count", "type": "string", "key": "initial_mystery_pill_count", "label": { "langMap": { "zhs": "初始拥有未知胶囊数", "en": "Starting mystery pills" }, "fallback": "Starting mystery pills" }, "description": { "langMap": { "zhs": "新开局时直接加入牌组。范围 0–1000；超过本局胶囊槽位数时会重复抽取。", "en": "Added directly to the deck in a new run. Range: 0–1000; rolls repeat when this exceeds the run's capsule slots." }, "fallback": "Added directly to the deck in a new run. Range: 0–1000." }, "placeholder": { "langMap": { "zhs": "0–1000", "en": "0–1000" }, "fallback": "0–1000" }, "maxLength": 4, "defaultValue": "1", "scope": "global" },
+              { "id": "starting_deck_notice", "type": "info-card", "label": { "langMap": { "zhs": "说明", "en": "Note" }, "fallback": "Note" }, "body": { "langMap": { "zhs": "此设置仅在下一局新开局时生效。", "en": "This setting applies only to the next new run." }, "fallback": "This setting applies only to the next new run." } }
+            ]
+          }
+        ]
+      }
   ]
 }

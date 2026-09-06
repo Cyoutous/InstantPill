@@ -1,3 +1,4 @@
+using System.Globalization;
 using InstantPill.InstantPillCode.Configuration;
 
 namespace InstantPill.InstantPillCode.Integrations.RitsuLib;
@@ -10,7 +11,10 @@ public static class PillRewardSettingsInterop
 {
     public static object CreateRitsuLibSettingsSchema() => "res://InstantPill/ritsulib/reward_settings_schema.json";
 
-    public static object? GetRitsuLibSettingValue(string key) => PillRewardSettings.GetValue(key);
+    public static object? GetRitsuLibSettingValue(string key) =>
+        key == PillRewardSettings.InitialMysteryPillCountKey
+            ? GetRitsuLibSettingString(key)
+            : PillRewardSettings.GetValue(key);
 
     public static void SetRitsuLibSettingValue(string key, object? value)
         => SetValue(key, value);
@@ -21,6 +25,15 @@ public static class PillRewardSettingsInterop
     public static int GetRitsuLibSettingInt(string key) => PillRewardSettings.GetValue(key) is int value ? value : 0;
 
     public static void SetRitsuLibSettingInt(string key, int value) => SetValue(key, value);
+
+    // RitsuLib renders a "string" schema entry as an input box. The backing setting remains an
+    // integer: SetValue validates and clamps its text input before saving it as an integer.
+    public static string GetRitsuLibSettingString(string key) =>
+        PillRewardSettings.GetValue(key) is int value
+            ? value.ToString(CultureInfo.InvariantCulture)
+            : string.Empty;
+
+    public static void SetRitsuLibSettingString(string key, string value) => SetValue(key, value);
 
     public static bool GetRitsuLibSettingBool(string key) => PillRewardSettings.GetValue(key) is bool value && value;
 

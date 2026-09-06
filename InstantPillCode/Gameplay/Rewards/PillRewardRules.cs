@@ -39,6 +39,7 @@ public static class PillRewardDefaults
         NormalGuaranteedRewardCount = 0,
         EliteGuaranteedRewardCount = 1,
         BossGuaranteedRewardCount = 2,
+        InitialMysteryPillCount = 1,
         EnableNormalRewards = true,
         EnableEliteRewards = true,
         EnableBossRewards = true,
@@ -113,6 +114,9 @@ public sealed class PillRewardRulesSnapshot
 
     public int BossGuaranteedRewardCount { get; set; }
 
+    /// <summary>How many mystery capsules each player receives directly in their starting deck.</summary>
+    public int InitialMysteryPillCount { get; set; }
+
     public bool EnableNormalRewards { get; set; }
 
     public bool EnableEliteRewards { get; set; }
@@ -134,6 +138,7 @@ public sealed class PillRewardRulesSnapshot
         NormalGuaranteedRewardCount = NormalGuaranteedRewardCount,
         EliteGuaranteedRewardCount = EliteGuaranteedRewardCount,
         BossGuaranteedRewardCount = BossGuaranteedRewardCount,
+        InitialMysteryPillCount = InitialMysteryPillCount,
         EnableNormalRewards = EnableNormalRewards,
         EnableEliteRewards = EnableEliteRewards,
         EnableBossRewards = EnableBossRewards,
@@ -153,5 +158,6 @@ public sealed class PillRewardRulesSnapshot
         NormalGuaranteedRewardCount = Math.Clamp(NormalGuaranteedRewardCount, 0, maximumChoices);
         EliteGuaranteedRewardCount = Math.Clamp(EliteGuaranteedRewardCount, 0, maximumChoices);
         BossGuaranteedRewardCount = Math.Clamp(BossGuaranteedRewardCount, 0, maximumChoices);
+        InitialMysteryPillCount = Math.Clamp(InitialMysteryPillCount, 0, 1000);
     }
 }
