@@ -6,7 +6,9 @@ namespace InstantPill.InstantPillCode.Gameplay.Rewards;
 /// <summary>Per-player persisted state for InstantPill's two independent reward pity systems.</summary>
 public sealed class PillRewardRunState : IPacketSerializable
 {
-    public const int CurrentSchemaVersion = 2;
+    // Version 3 registers the six attempt/guarantee fields with BaseLib's persisted object
+    // schema. Older runs cannot restore those values reliably and must be restarted.
+    public const int CurrentSchemaVersion = 3;
 
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
 

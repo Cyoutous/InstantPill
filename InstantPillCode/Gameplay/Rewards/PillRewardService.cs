@@ -80,6 +80,9 @@ public static class PillRewardService
         int independentRewardCount = Math.Max(
             successfulIndependentRolls,
             GetGuaranteedRewardCount(state.Rules, room.RoomType));
+        MainFile.Logger.Info(
+            $"InstantPill {room.RoomType} capsule rewards: attempts={independentAttemptCount}, successes={successfulIndependentRolls}, guaranteed={GetGuaranteedRewardCount(state.Rules, room.RoomType)}, panels={independentRewardCount}.",
+            1);
         for (int rewardIndex = 0; rewardIndex < independentRewardCount; rewardIndex++)
         {
             PillCardReward? reward = CreatePillReward(player, state, room.RoomType, offeredCardIds);
