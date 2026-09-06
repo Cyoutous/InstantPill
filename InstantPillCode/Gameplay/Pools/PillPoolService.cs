@@ -23,6 +23,24 @@ public static class PillPoolService
         new(_ => null, "instant_pill_pool");
 
     /// <summary>
+    /// Returns whether an effect-card catalogue entry may participate in gameplay randomization.
+    /// Grade metadata is static model data, so this lookup intentionally does not create a card
+    /// instance or consume any run RNG.
+    /// </summary>
+    public static bool IsEligibleEffectPill(string effectCardId)
+    {
+        CardModel canonicalCard = ModelDb.GetById<CardModel>(
+            new ModelId(ModelId.SlugifyCategory<CardModel>(), effectCardId));
+        if (canonicalCard is not BaseEffectPillCard effectPill)
+        {
+            throw new InvalidOperationException(
+                $"InstantPill effect catalog entry {effectCardId} is not a {nameof(BaseEffectPillCard)}.");
+        }
+
+        return effectPill.Grade != BaseEffectPillCard.EffectPillGrade.Excluded;
+    }
+
+    /// <summary>
     /// Creates this player's pools only when no saved state exists. A restored state is validated,
     /// never rerolled.
     /// </summary>

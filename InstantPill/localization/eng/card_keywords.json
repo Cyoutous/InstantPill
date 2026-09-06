@@ -2,5 +2,7 @@
   "INSTANTPILL-CAPSULE.title": "Capsule",
   "INSTANTPILL-CAPSULE.description": "Capsules enter your hand at the start of combat.",
   "INSTANTPILL-MYSTERY.title": "???",
-  "INSTANTPILL-MYSTERY.description": "This capsule's effect has not been revealed."
+  "INSTANTPILL-MYSTERY.description": "This capsule's effect has not been revealed.",
+  "INSTANTPILL-STATUS_CARD.title": "Status",
+  "INSTANTPILL-STATUS_CARD.description": "Status cards usually have harmful effects when played or drawn."
 }

@@ -2,5 +2,7 @@
   "INSTANTPILL-CAPSULE.title": "胶囊",
   "INSTANTPILL-CAPSULE.description": "胶囊会在战斗开始时加入手牌。",
   "INSTANTPILL-MYSTERY.title": "？？？",
-  "INSTANTPILL-MYSTERY.description": "该胶囊的效果尚未揭示。"
+  "INSTANTPILL-MYSTERY.description": "该胶囊的效果尚未揭示。",
+  "INSTANTPILL-STATUS_CARD.title": "状态牌",
+  "INSTANTPILL-STATUS_CARD.description": "状态牌通常会在打出或抽到时产生不利影响。"
 }

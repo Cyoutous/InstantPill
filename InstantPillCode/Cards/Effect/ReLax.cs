@@ -26,7 +26,7 @@ public sealed class ReLax : BaseEffectPillCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // Audio playback is presentation-only. Each player hears this pill on their own client.
-        if (!LocalContext.IsMine(this))
+        if (!LocalContext.IsMine(this) || PillAudio.AreCustomCardSoundsSuppressed)
         {
             return;
         }

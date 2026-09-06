@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using MegaCrit.Sts2.Core.Saves;
 
 namespace InstantPill.InstantPillCode.Audio;
@@ -21,6 +22,23 @@ internal static class PillAudio
     private static readonly HashSet<string> PreloadedPaths = new(StringComparer.Ordinal);
     private static bool _reportedUnavailable;
     private static bool _reportedReady;
+    private static readonly AsyncLocal<int> CustomSoundSuppressionDepth = new();
+
+    /// <summary>
+    /// Whether this async execution flow should omit sounds authored by InstantPill cards.
+    /// Native game VFX and SFX are deliberately outside this scope.
+    /// </summary>
+    public static bool AreCustomCardSoundsSuppressed => CustomSoundSuppressionDepth.Value > 0;
+
+    /// <summary>
+    /// Temporarily silences only InstantPill-authored card audio on the current async flow.
+    /// This is used when Question Marks executes another pill's gameplay as a proxy.
+    /// </summary>
+    public static IDisposable SuppressCustomCardSounds()
+    {
+        CustomSoundSuppressionDepth.Value++;
+        return new CustomSoundSuppressionScope();
+    }
 
     /// <summary>Finds the optional RitsuLib FMOD bridge without preloading any individual asset.</summary>
     public static void Initialize()
@@ -34,6 +52,11 @@ internal static class PillAudio
     /// </summary>
     public static void PlayOneShot(string resourcePath, float baseVolume = 1f, float pitch = 1f)
     {
+        if (AreCustomCardSoundsSuppressed)
+        {
+            return;
+        }
+
         if (string.IsNullOrWhiteSpace(resourcePath))
         {
             MainFile.Logger.Warn("InstantPill ignored an audio request with an empty resource path.");
@@ -151,5 +174,21 @@ internal static class PillAudio
 
         _reportedUnavailable = true;
         MainFile.Logger.Warn($"InstantPill audio is disabled: {message}");
+    }
+
+    private sealed class CustomSoundSuppressionScope : IDisposable
+    {
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+            CustomSoundSuppressionDepth.Value = Math.Max(0, CustomSoundSuppressionDepth.Value - 1);
+        }
     }
 }

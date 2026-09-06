@@ -1,0 +1,20 @@
+{
+  "INSTANTPILL-ENLARGED.title": "放大",
+  "INSTANTPILL-ENLARGED.description": "攻击伤害增加50%。",
+  "INSTANTPILL-ENLARGED.smartDescription": "{OwnerName}的攻击伤害在[blue]{Amount}[/blue]回合内增加50%。",
+  "INSTANTPILL-CARD_COST_INCREASED.title": "卡牌耗能增加",
+  "INSTANTPILL-CARD_COST_INCREASED.description": "你的下[blue]{Amount}[/blue]张牌耗能增加1。",
+  "INSTANTPILL-CARD_COST_INCREASED.smartDescription": "你的下[blue]{Amount}[/blue]张牌耗能增加1。",
+  "INSTANTPILL-FREE_NEXT_CARD.title": "免费打出",
+  "INSTANTPILL-FREE_NEXT_CARD.description": "你的下[blue]{Amount}[/blue]张牌免费打出。",
+  "INSTANTPILL-FREE_NEXT_CARD.smartDescription": "你的下[blue]{Amount}[/blue]张牌免费打出。",
+  "INSTANTPILL-DOUBLE_NEXT_ATTACK.title": "下次攻击翻倍",
+  "INSTANTPILL-DOUBLE_NEXT_ATTACK.description": "你的下[blue]{Amount}[/blue]张造成攻击伤害的牌攻击翻倍。",
+  "INSTANTPILL-DOUBLE_NEXT_ATTACK.smartDescription": "你的下[blue]{Amount}[/blue]张造成攻击伤害的牌攻击翻倍。",
+  "INSTANTPILL-I_CAN_SEE_FOREVER.title": "我能永远看清！",
+  "INSTANTPILL-I_CAN_SEE_FOREVER.description": "你的抽牌堆按实际顺序排列。",
+  "INSTANTPILL-I_CAN_SEE_FOREVER.smartDescription": "你的抽牌堆按实际顺序排列。",
+  "INSTANTPILL-GULP.title": "咕噜！",
+  "INSTANTPILL-GULP.description": "战斗结束后获得[blue]{Amount}[/blue]件遗物奖励。",
+  "INSTANTPILL-GULP.smartDescription": "战斗结束后获得[blue]{Amount}[/blue]件遗物奖励。"
+}
