@@ -42,12 +42,32 @@ public sealed class Addicted : BaseEffectPillCard
             PillAudio.PlayOneShot(SoundPath, SoundVolume);
         }
 
-        await PowerCmd.Apply<HardenedShellPower>(
-            choiceContext,
-            Owner.Creature,
-            HardenedShellAmount,
-            Owner.Creature,
-            this);
+        HardenedShellPower? existingHardenedShell = Owner.Creature.GetPower<HardenedShellPower>();
+        if (existingHardenedShell == null)
+        {
+            await PowerCmd.Apply<HardenedShellPower>(
+                choiceContext,
+                Owner.Creature,
+                HardenedShellAmount,
+                Owner.Creature,
+                this);
+        }
+        else
+        {
+            // Existing Hardened Shell is weakened by up to two stacks, but Addicted never lets
+            // it fall below ten. This also avoids temporarily creating a non-positive amount.
+            decimal amountToRemove = existingHardenedShell.Amount - 10m;
+            if (amountToRemove > 0m)
+            {
+                await PowerCmd.ModifyAmount(
+                    choiceContext,
+                    existingHardenedShell,
+                    amountToRemove > 2m ? -2m : -amountToRemove,
+                    Owner.Creature,
+                    this);
+            }
+        }
+
         await PowerCmd.Apply<VulnerablePower>(
             choiceContext,
             Owner.Creature,

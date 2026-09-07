@@ -40,6 +40,23 @@ public sealed class Percs : BaseEffectPillCard
             PillAudio.PlayOneShot(SoundPath, SoundVolume);
         }
 
+        HardToKillPower? existingHardToKill = Owner.Creature.GetPower<HardToKillPower>();
+        if (existingHardToKill != null)
+        {
+            // Percs can never remove the final stack of Hard to Kill.
+            if (existingHardToKill.Amount > 1m)
+            {
+                await PowerCmd.ModifyAmount(
+                    choiceContext,
+                    existingHardToKill,
+                    -1m,
+                    Owner.Creature,
+                    this);
+            }
+
+            return;
+        }
+
         await PowerCmd.Apply<HardToKillPower>(
             choiceContext,
             Owner.Creature,
