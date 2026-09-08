@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using BaseLib.Utils.Attributes;
 using InstantPill.InstantPillCode.Audio;
 using InstantPill.InstantPillCode.Gameplay.Effects;
+using InstantPill.InstantPillCode.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -39,6 +40,13 @@ public sealed class Puberty : BaseEffectPillCard
             Owner.Creature,
             "PowerUp",
             Owner.Character.PowerUpAnimDelay);
+
+        await PowerCmd.Apply<PubertyPower>(
+            choiceContext,
+            Owner.Creature,
+            1m,
+            Owner.Creature,
+            this);
 
         if (playCount == UsesUntilMaxHpGain)
         {

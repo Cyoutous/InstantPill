@@ -19,8 +19,8 @@ namespace InstantPill.InstantPillCode.Cards.Mystery;
 /// </summary>
 public abstract class BaseMysteryPillCard : BasePillCard
 {
-    protected BaseMysteryPillCard()
-        : base(0)
+    protected BaseMysteryPillCard(bool showInCardLibrary = true)
+        : base(0, showInCardLibrary)
     {
     }
 

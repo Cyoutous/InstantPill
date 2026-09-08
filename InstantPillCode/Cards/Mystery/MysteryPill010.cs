@@ -5,4 +5,5 @@ namespace InstantPill.InstantPillCode.Cards.Mystery;
 [CustomID("INSTANTPILL-MYSTERY_PILL_010")]
 public sealed class MysteryPill010 : BaseMysteryPillCard
 {
+    public MysteryPill010() : base(showInCardLibrary: false) { }
 }

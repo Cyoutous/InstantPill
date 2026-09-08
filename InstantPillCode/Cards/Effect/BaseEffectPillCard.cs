@@ -38,8 +38,8 @@ public abstract class BaseEffectPillCard : BasePillCard
         Grade3 = 3
     }
 
-    protected BaseEffectPillCard()
-        : base(0)
+    protected BaseEffectPillCard(bool showInCardLibrary = true)
+        : base(0, showInCardLibrary)
     {
     }
 

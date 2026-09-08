@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using InstantPill.InstantPillCode.Cards;
 using InstantPill.InstantPillCode.Cards.Effect;
 using InstantPill.InstantPillCode.Gameplay.Pools;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 
 namespace InstantPill.InstantPillCode.Content;
@@ -19,14 +21,15 @@ public static class PillPortraitCatalog
     private const string MysteryPortraitDirectory = "res://InstantPill/images/cards/mystery";
     private const string EffectPortraitDirectory = "res://InstantPill/images/cards/effect";
 
-    public const string DefaultMysteryPortraitPath = MysteryPortraitDirectory + "/mystery_pill_unknown.png";
+    // This is used for effects which have no run-local mystery mapping, including the card
+    // library's canonical thumbnails and other ownerless previews.
+    public static string DefaultMysteryPortraitPath => CardModel.MissingPortraitPath;
 
-    public const string DefaultEffectPortraitPath = EffectPortraitDirectory + "/effect_pill_unknown.png";
+    public static string DefaultEffectPortraitPath => EffectPortraitDirectory + "/effect_pill_unknown.png";
 
     public static IReadOnlyList<string> AllMysteryPortraitPaths { get; } =
     [
-        .. PillPoolCatalog.MysteryPillIds.Select(GetMysteryPortraitPath),
-        DefaultMysteryPortraitPath
+        .. PillPoolCatalog.MysteryPillIds.Select(GetMysteryPortraitPath)
     ];
 
     public static IReadOnlyList<string> AllEffectPortraitPaths { get; } =
@@ -59,13 +62,26 @@ public static class PillPortraitCatalog
     /// </summary>
     public static string GetEffectPortraitPath(CardModel effectPill)
     {
+        if (PillCardLibraryPortraitContext.TryGetPortrait(effectPill.Id.Entry, out string libraryPortraitPath))
+        {
+            return libraryPortraitPath;
+        }
+
         if (effectPill.IsCanonical)
         {
-            return UsePackagedPortraitOrMissing(DefaultEffectPortraitPath);
+            return DefaultEffectPortraitPath;
+        }
+
+        // NInspectCardScreen creates an ownerless mutable clone before rendering a card. It is
+        // not a combat card and must never attempt to read a player's run-local capsule pool.
+        Player? owner = effectPill.Owner;
+        if (owner == null)
+        {
+            return DefaultEffectPortraitPath;
         }
 
         string? mysteryPillId = PillPoolService.TryGetMysteryPillIdForAssignedEffect(
-            effectPill.Owner,
+            owner,
             effectPill.Id.Entry);
         if (mysteryPillId != null)
         {
@@ -73,10 +89,10 @@ public static class PillPortraitCatalog
         }
 
         string? questionMarksMysteryPillId = PillPoolService.TryGetMysteryPillIdForAssignedEffect(
-            effectPill.Owner,
+            owner,
             QuestionMarks.CardId);
         return questionMarksMysteryPillId == null
-            ? UsePackagedPortraitOrMissing(DefaultEffectPortraitPath)
+            ? DefaultEffectPortraitPath
             : GetMysteryPortraitPath(questionMarksMysteryPillId);
     }
 
