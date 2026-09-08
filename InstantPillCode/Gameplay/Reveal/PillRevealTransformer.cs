@@ -14,7 +14,9 @@ namespace InstantPill.InstantPillCode.Gameplay.Reveal;
 
 /// <summary>
 /// Replaces every live instance of one revealed mystery identity with its preassigned effect card.
-/// Deck cards are transformed first so combat replacements can retain the appropriate DeckVersion.
+/// When the run uses a shared pool, this covers every player in the run; otherwise it remains
+/// limited to the owner of the revealed card. Deck cards are transformed first so combat
+/// replacements can retain the appropriate DeckVersion.
 /// </summary>
 internal static class PillRevealTransformer
 {
@@ -32,17 +34,34 @@ internal static class PillRevealTransformer
                 new ModelId(ModelId.SlugifyCategory<CardModel>(), playedEffectCardId));
         string mysteryCardId = playedMystery.Id.Entry;
 
-        Dictionary<CardModel, CardModel> deckReplacements = await TransformDeckCopies(
-            player,
-            mysteryCardId,
-            canonicalEffect);
-        CardModel? playedEffect = await TransformCombatCopies(
-            player,
-            playedMystery,
-            mysteryCardId,
-            canonicalEffect,
-            canonicalPlayedEffect,
-            deckReplacements);
+        IReadOnlyList<Player> affectedPlayers = PillPoolService.IsSharedPoolEnabled(player)
+            ? player.RunState.Players
+            : [player];
+        Dictionary<Player, Dictionary<CardModel, CardModel>> deckReplacementsByPlayer = [];
+
+        foreach (Player affectedPlayer in affectedPlayers)
+        {
+            deckReplacementsByPlayer[affectedPlayer] = await TransformDeckCopies(
+                affectedPlayer,
+                mysteryCardId,
+                canonicalEffect);
+        }
+
+        CardModel? playedEffect = null;
+        foreach (Player affectedPlayer in affectedPlayers)
+        {
+            CardModel? transformedPlayedCard = await TransformCombatCopies(
+                affectedPlayer,
+                playedMystery,
+                mysteryCardId,
+                canonicalEffect,
+                canonicalPlayedEffect,
+                deckReplacementsByPlayer[affectedPlayer]);
+            if (ReferenceEquals(affectedPlayer, player))
+            {
+                playedEffect = transformedPlayedCard;
+            }
+        }
 
         return playedEffect ?? throw new InvalidOperationException(
             $"InstantPill could not find the played mystery card {mysteryCardId} in the combat piles.");
@@ -88,7 +107,14 @@ internal static class PillRevealTransformer
         PlayerCombatState? playerCombatState = player.PlayerCombatState;
         if (playerCombatState == null)
         {
-            throw new InvalidOperationException("InstantPill cannot reveal a mystery pill outside combat.");
+            if (ReferenceEquals(player, playedMystery.Owner))
+            {
+                throw new InvalidOperationException("InstantPill cannot reveal a mystery pill outside combat.");
+            }
+
+            // A remote player can have no combat state after disconnecting or being removed
+            // from a combat. Their permanent deck was already updated above.
+            return null;
         }
 
         CardModel[] combatCopies = playerCombatState.AllCards

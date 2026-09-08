@@ -97,6 +97,8 @@ public static class PillRewardSettings
         EliteGuaranteedRewardCountKey => _data.EliteGuaranteedRewardCount,
         BossGuaranteedRewardCountKey => _data.BossGuaranteedRewardCount,
         InitialMysteryPillCountKey => _data.InitialMysteryPillCount,
+        SyncMultiplayerParametersWithHostKey => _data.SyncMultiplayerParametersWithHost,
+        EnableSharedMultiplayerPillPoolKey => _data.EnableSharedMultiplayerPillPool,
         EnableNormalRewardsKey => _data.EnableNormalRewards,
         EnableEliteRewardsKey => _data.EnableEliteRewards,
         EnableBossRewardsKey => _data.EnableBossRewards,
@@ -120,6 +122,8 @@ public static class PillRewardSettings
                 case EnableEliteRewardsKey: _data.EnableEliteRewards = booleanValue; break;
                 case EnableBossRewardsKey: _data.EnableBossRewards = booleanValue; break;
                 case PreventDuplicateOptionsKey: _data.PreventDuplicateCapsuleOptionsWithinCombat = booleanValue; break;
+                case EnableSharedMultiplayerPillPoolKey: _data.EnableSharedMultiplayerPillPool = booleanValue; break;
+                case SyncMultiplayerParametersWithHostKey: _data.SyncMultiplayerParametersWithHost = booleanValue; break;
                 default: return false;
             }
 
@@ -251,6 +255,8 @@ public static class PillRewardSettings
             EliteGuaranteedRewardCount = defaults.EliteGuaranteedRewardCount,
             BossGuaranteedRewardCount = defaults.BossGuaranteedRewardCount,
             InitialMysteryPillCount = defaults.InitialMysteryPillCount,
+            SyncMultiplayerParametersWithHost = true,
+            EnableSharedMultiplayerPillPool = false,
             EnableNormalRewards = defaults.EnableNormalRewards,
             EnableEliteRewards = defaults.EnableEliteRewards,
             EnableBossRewards = defaults.EnableBossRewards,
@@ -344,7 +350,8 @@ public static class PillRewardSettings
     }
 
     private static bool IsBooleanKey(string key) => key is
-        EnableNormalRewardsKey or EnableEliteRewardsKey or EnableBossRewardsKey or PreventDuplicateOptionsKey;
+        EnableNormalRewardsKey or EnableEliteRewardsKey or EnableBossRewardsKey or PreventDuplicateOptionsKey or
+        EnableSharedMultiplayerPillPoolKey or SyncMultiplayerParametersWithHostKey;
 
     public const string IndependentBaseOddsKey = "independent_base_odds";
     public const string IndependentSuccessDecreaseKey = "independent_success_decrease";
@@ -370,6 +377,8 @@ public static class PillRewardSettings
     public const string EliteGuaranteedRewardCountKey = "elite_guaranteed_reward_count";
     public const string BossGuaranteedRewardCountKey = "boss_guaranteed_reward_count";
     public const string InitialMysteryPillCountKey = "initial_mystery_pill_count";
+    public const string SyncMultiplayerParametersWithHostKey = "sync_multiplayer_parameters_with_host";
+    public const string EnableSharedMultiplayerPillPoolKey = "enable_shared_multiplayer_pill_pool";
     public const string EnableNormalRewardsKey = "enable_normal_rewards";
     public const string EnableEliteRewardsKey = "enable_elite_rewards";
     public const string EnableBossRewardsKey = "enable_boss_rewards";
@@ -385,6 +394,8 @@ public static class PillRewardSettings
         NormalGenerationAttemptsKey, EliteGenerationAttemptsKey, BossGenerationAttemptsKey,
         NormalGuaranteedRewardCountKey, EliteGuaranteedRewardCountKey, BossGuaranteedRewardCountKey,
         InitialMysteryPillCountKey,
+        SyncMultiplayerParametersWithHostKey,
+        EnableSharedMultiplayerPillPoolKey,
         EnableNormalRewardsKey, EnableEliteRewardsKey, EnableBossRewardsKey, PreventDuplicateOptionsKey
     ];
 }
@@ -415,6 +426,8 @@ public sealed class PillRewardSettingsData
     public int EliteGuaranteedRewardCount;
     public int BossGuaranteedRewardCount;
     public int InitialMysteryPillCount;
+    public bool SyncMultiplayerParametersWithHost;
+    public bool EnableSharedMultiplayerPillPool;
     public bool EnableNormalRewards;
     public bool EnableEliteRewards;
     public bool EnableBossRewards;

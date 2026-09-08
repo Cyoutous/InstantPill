@@ -47,10 +47,23 @@ public static class PillRewardSaveRegistration
             ExtendedSaveTypes.PropertyFunc<PillRewardRunState, int>(nameof(PillRewardRunState.ReplacementRollCounter)),
             ExtendedSaveTypes.PropertyFunc<PillRewardRunState, int>(nameof(PillRewardRunState.ChoiceRollCounter)),
             ExtendedSaveTypes.PropertyFunc<PillRewardRunState, PillRewardRulesSnapshot>(nameof(PillRewardRunState.Rules)));
+        ExtendedSaveTypes.RegisterObjectSaveType<PillMultiplayerRulesSnapshot>(
+            ExtendedSaveTypes.PropertyFunc<PillMultiplayerRulesSnapshot, int>(nameof(PillMultiplayerRulesSnapshot.SchemaVersion)),
+            ExtendedSaveTypes.PropertyFunc<PillMultiplayerRulesSnapshot, bool>(nameof(PillMultiplayerRulesSnapshot.HostSynchronizesParameters)),
+            ExtendedSaveTypes.PropertyFunc<PillMultiplayerRulesSnapshot, bool>(nameof(PillMultiplayerRulesSnapshot.HostEnablesSharedPillPool)),
+            ExtendedSaveTypes.PropertyFunc<PillMultiplayerRulesSnapshot, PillRewardRulesSnapshot>(nameof(PillMultiplayerRulesSnapshot.RewardRules)));
+        ExtendedSaveTypes.RegisterObjectSaveType<PillMultiplayerRulesSessionState>(
+            ExtendedSaveTypes.PropertyFunc<PillMultiplayerRulesSessionState, int>(nameof(PillMultiplayerRulesSessionState.SchemaVersion)),
+            ExtendedSaveTypes.PropertyFunc<PillMultiplayerRulesSessionState, PillMultiplayerRulesSnapshot>(nameof(PillMultiplayerRulesSessionState.Snapshot)));
 
         if (!PillRewardService.State.RegisterCustomSave())
         {
             throw new System.InvalidOperationException("InstantPill could not register its per-player reward save field.");
+        }
+
+        if (!PillMultiplayerRulesService.State.RegisterCustomSave())
+        {
+            throw new System.InvalidOperationException("InstantPill could not register its multiplayer-rules session save field.");
         }
 
         _registered = true;

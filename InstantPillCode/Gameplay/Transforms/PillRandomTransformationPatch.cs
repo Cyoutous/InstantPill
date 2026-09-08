@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
@@ -9,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Random;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace InstantPill.InstantPillCode.Gameplay.Transforms;
 
@@ -55,10 +55,17 @@ internal static class PillRandomTransformationPatch
                 "InstantPill cannot randomly transform a capsule because this run has no alternate capsule-pool identity.");
         }
 
-        string selectedId = rng.NextItem(candidateIds);
+        string? selectedId = rng.NextItem(candidateIds);
+        if (selectedId == null)
+        {
+            throw new InvalidOperationException("InstantPill could not select a random capsule transformation target.");
+        }
+
         CardModel canonicalCard = ModelDb.GetById<CardModel>(
             new ModelId(ModelId.SlugifyCategory<CardModel>(), selectedId));
-        __result = original.CardScope.CreateCard(canonicalCard, original.Owner);
+        ICardScope scope = original.CardScope
+            ?? throw new InvalidOperationException("InstantPill cannot transform a capsule outside a card scope.");
+        __result = scope.CreateCard(canonicalCard, original.Owner);
         MainFile.Logger.Info(
             $"Redirected random capsule transformation {original.Id.Entry} -> {selectedId} for player {original.Owner.NetId}.",
             1);

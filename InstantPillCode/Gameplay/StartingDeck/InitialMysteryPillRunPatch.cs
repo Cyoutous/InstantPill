@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
+using InstantPill.InstantPillCode.Gameplay.Pools;
+using InstantPill.InstantPillCode.Gameplay.Rewards;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace InstantPill.InstantPillCode.Gameplay.StartingDeck;
@@ -30,6 +32,14 @@ internal static class InitialMysteryPillRunPatch
             InitialMysteryPillService.GrantForNewRun(player);
         }
     }
+
+    // Take the run-level mode snapshot before this setup method creates starting decks. The
+    // postfix below subsequently calls into the pool service to roll each player's configured
+    // starting mystery pills, so waiting until RunStarted would be too late.
+    [HarmonyPrefix]
+    [HarmonyPriority(Priority.Last)]
+    private static void SnapshotPoolModeForNewRun(RunState __0) =>
+        PillPoolService.InitializeRunState(__0);
 
     private static MethodBase RequireMethod(string methodName) =>
         AccessTools.Method(typeof(RunManager), methodName)

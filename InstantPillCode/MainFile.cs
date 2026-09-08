@@ -44,6 +44,7 @@ public partial class MainFile : Node
 
     private static void InitializePillRunState(RunState runState)
     {
+        PillPoolService.InitializeRunState(runState);
         foreach (var player in runState.Players)
         {
             PillPoolService.EnsureInitialized(player);

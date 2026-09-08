@@ -4,10 +4,12 @@ using System.Linq;
 using BaseLib.Utils;
 using InstantPill.InstantPillCode;
 using InstantPill.InstantPillCode.Cards.Effect;
+using InstantPill.InstantPillCode.Gameplay.Rewards;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Random;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace InstantPill.InstantPillCode.Gameplay.Pools;
 
@@ -21,6 +23,40 @@ public static class PillPoolService
 
     public static SavedSpireField<Player, PillPoolState> State { get; } =
         new(_ => null, "instant_pill_pool");
+
+    /// <summary>
+    /// Holds the run-start mode snapshot and, when enabled, the one pool shared by every player
+    /// in a multiplayer run. The existing <see cref="State"/> remains the independent-pool
+    /// storage used by single-player and by multiplayer runs with the setting disabled.
+    /// </summary>
+    public static SavedSpireField<IRunState, PillPoolSessionState> SessionState { get; } =
+        new(_ => null, "instant_pill_pool_session");
+
+    /// <summary>
+    /// Snapshots the host-authoritative multiplayer decision at run creation. Once stored, this
+    /// state—not a later settings menu change—controls how every pool lookup is routed.
+    /// </summary>
+    public static void InitializeRunState(IRunState runState)
+    {
+        if (SessionState.Get(runState) != null)
+        {
+            return;
+        }
+
+        bool sharedPoolEnabled = PillMultiplayerRulesService.IsSharedPillPoolEnabled(runState);
+        SessionState.Set(runState, new PillPoolSessionState
+        {
+            SharedPoolEnabled = sharedPoolEnabled
+        });
+
+        MainFile.Logger.Info(
+            $"Initialized InstantPill pool session: shared multiplayer pool = {sharedPoolEnabled}.",
+            1);
+    }
+
+    /// <summary>Returns whether this player's run uses the shared capsule-pool state.</summary>
+    public static bool IsSharedPoolEnabled(Player player) =>
+        GetOrCreateSessionState(player.RunState).SharedPoolEnabled;
 
     /// <summary>
     /// Returns whether an effect-card catalogue entry may participate in gameplay randomization.
@@ -46,6 +82,12 @@ public static class PillPoolService
     /// </summary>
     public static PillPoolState EnsureInitialized(Player player)
     {
+        PillPoolSessionState session = GetOrCreateSessionState(player.RunState);
+        if (session.SharedPoolEnabled)
+        {
+            return EnsureSharedInitialized(player.RunState, session);
+        }
+
         PillPoolState? existingState = State.Get(player);
         if (existingState != null)
         {
@@ -54,11 +96,40 @@ public static class PillPoolService
             return existingState;
         }
 
+        PillPoolState state = CreatePoolState(player);
+        State.Set(player, state);
+        MainFile.Logger.Info(
+            $"Initialized InstantPill pools for player {player.NetId}: {state.CapsuleSlots.Count} capsule slots and {state.RemainingEffectIds.Count} candidate effects.",
+            1);
+        return state;
+    }
+
+    private static PillPoolState EnsureSharedInitialized(IRunState runState, PillPoolSessionState session)
+    {
+        Player rngOwner = GetSharedRngOwner(runState);
+        if (session.HasSharedPool)
+        {
+            UpgradeSchemaV1State(rngOwner, session.SharedPool, isSharedPool: true);
+            ValidateExistingState(session.SharedPool);
+            return session.SharedPool;
+        }
+
+        session.SharedPool = CreatePoolState(rngOwner);
+        session.HasSharedPool = true;
+        SessionState.Set(runState, session);
+        MainFile.Logger.Info(
+            $"Initialized shared InstantPill pool: {session.SharedPool.CapsuleSlots.Count} capsule slots and {session.SharedPool.RemainingEffectIds.Count} candidate effects.",
+            1);
+        return session.SharedPool;
+    }
+
+    private static PillPoolState CreatePoolState(Player rngOwner)
+    {
         PillPoolRules.ValidateCatalog();
 
-        Rng rng = new(player, PoolRngId);
+        Rng rng = new(rngOwner, PoolRngId);
         List<EffectCandidate> eligibleEffects = PillPoolCatalog.EffectPillIds
-            .Select(effectId => CreateEffectCandidate(player, effectId))
+            .Select(effectId => CreateEffectCandidate(rngOwner, effectId))
             .Where(candidate => candidate.Grade != BaseEffectPillCard.EffectPillGrade.Excluded)
             .ToList();
         List<string> selectedMysteries = new(PillPoolCatalog.MysteryPillIds);
@@ -81,7 +152,7 @@ public static class PillPoolService
 
         List<string> selectedMysteryIds = selectedMysteries.Take(effectivePoolSize).ToList();
 
-        PillPoolState state = new()
+        return new PillPoolState
         {
             RemainingEffectIds = candidateEffects,
             CapsuleSlots = selectedMysteryIds
@@ -92,12 +163,6 @@ public static class PillPoolService
                 })
                 .ToList()
         };
-
-        State.Set(player, state);
-        MainFile.Logger.Info(
-            $"Initialized InstantPill pools for player {player.NetId}: {state.CapsuleSlots.Count} capsule slots and {state.RemainingEffectIds.Count} candidate effects.",
-            1);
-        return state;
     }
 
     /// <summary>
@@ -124,9 +189,9 @@ public static class PillPoolService
             throw new InvalidOperationException("InstantPill cannot roll a capsule from the available capsule pool.");
         }
 
-        Rng rng = NextPoolRng(player, state);
+        Rng rng = NextPoolRng(GetPoolRngOwner(player), state);
         PillPoolSlotState slot = candidates[rng.NextInt(candidates.Count)];
-        State.Set(player, state);
+        PersistPoolState(player, state);
         return slot.CurrentCardId;
     }
 
@@ -164,7 +229,7 @@ public static class PillPoolService
     /// </summary>
     public static string? TryGetMysteryPillIdForAssignedEffect(Player player, string effectPillId)
     {
-        PillPoolState? state = State.Get(player);
+        PillPoolState? state = TryGetExistingPoolState(player);
         return state?.CapsuleSlots
             .FirstOrDefault(slot => slot.AssignedEffectPillId == effectPillId)
             ?.MysteryPillId;
@@ -197,9 +262,11 @@ public static class PillPoolService
         }
 
         slot.IsRevealed = true;
-        State.Set(player, state);
+        PersistPoolState(player, state);
 
-        MainFile.Logger.Info($"Activated preassigned mapping {mysteryPillId} -> {slot.AssignedEffectPillId} for player {player.NetId}.", 1);
+        MainFile.Logger.Info(
+            $"Activated preassigned mapping {mysteryPillId} -> {slot.AssignedEffectPillId} for {(IsSharedPoolEnabled(player) ? "shared pool" : $"player {player.NetId}")}.",
+            1);
         return slot.AssignedEffectPillId;
     }
 
@@ -278,7 +345,7 @@ public static class PillPoolService
         string Id,
         BaseEffectPillCard.EffectPillGrade Grade);
 
-    private static void UpgradeSchemaV1State(Player player, PillPoolState state)
+    private static void UpgradeSchemaV1State(Player player, PillPoolState state, bool isSharedPool = false)
     {
         if (state.SchemaVersion != 1)
         {
@@ -303,9 +370,68 @@ public static class PillPoolService
         }
 
         state.SchemaVersion = PillPoolRules.SchemaVersion;
-        State.Set(player, state);
-        MainFile.Logger.Info($"Migrated InstantPill pool state for player {player.NetId} from schema v1 to v2.", 1);
+        if (isSharedPool)
+        {
+            PillPoolSessionState session = GetOrCreateSessionState(player.RunState);
+            session.SharedPool = state;
+            session.HasSharedPool = true;
+            SessionState.Set(player.RunState, session);
+        }
+        else
+        {
+            State.Set(player, state);
+        }
+
+        MainFile.Logger.Info(
+            $"Migrated InstantPill {(isSharedPool ? "shared" : $"player {player.NetId}")} pool state from schema v1 to v2.",
+            1);
     }
+
+    private static PillPoolSessionState GetOrCreateSessionState(IRunState runState)
+    {
+        PillPoolSessionState? session = SessionState.Get(runState);
+        if (session != null)
+        {
+            return session;
+        }
+
+        InitializeRunState(runState);
+        return SessionState.Get(runState)
+            ?? throw new InvalidOperationException("InstantPill could not initialize its run-level pool session.");
+    }
+
+    private static PillPoolState? TryGetExistingPoolState(Player player)
+    {
+        PillPoolSessionState? session = SessionState.Get(player.RunState);
+        if (session is { SharedPoolEnabled: true })
+        {
+            return session.HasSharedPool ? session.SharedPool : null;
+        }
+
+        return State.Get(player);
+    }
+
+    private static void PersistPoolState(Player player, PillPoolState state)
+    {
+        PillPoolSessionState session = GetOrCreateSessionState(player.RunState);
+        if (session.SharedPoolEnabled)
+        {
+            session.SharedPool = state;
+            session.HasSharedPool = true;
+            SessionState.Set(player.RunState, session);
+            return;
+        }
+
+        State.Set(player, state);
+    }
+
+    private static Player GetPoolRngOwner(Player player) =>
+        IsSharedPoolEnabled(player) ? GetSharedRngOwner(player.RunState) : player;
+
+    private static Player GetSharedRngOwner(IRunState runState) => runState.Players
+        .OrderBy(player => player.NetId)
+        .FirstOrDefault()
+        ?? throw new InvalidOperationException("InstantPill cannot initialize a shared pool without a player.");
 
     private static void ValidateExistingState(PillPoolState state)
     {

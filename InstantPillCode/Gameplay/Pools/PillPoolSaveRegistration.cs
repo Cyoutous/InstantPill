@@ -27,10 +27,20 @@ public static class PillPoolSaveRegistration
             ExtendedSaveTypes.PropertyFunc<PillPoolState, int>(nameof(PillPoolState.RandomRollCounter)),
             ExtendedSaveTypes.PropertyFunc<PillPoolState, System.Collections.Generic.List<string>>(nameof(PillPoolState.RemainingEffectIds)),
             ExtendedSaveTypes.PropertyFunc<PillPoolState, System.Collections.Generic.List<PillPoolSlotState>>(nameof(PillPoolState.CapsuleSlots)));
+        ExtendedSaveTypes.RegisterObjectSaveType<PillPoolSessionState>(
+            ExtendedSaveTypes.PropertyFunc<PillPoolSessionState, int>(nameof(PillPoolSessionState.SchemaVersion)),
+            ExtendedSaveTypes.PropertyFunc<PillPoolSessionState, bool>(nameof(PillPoolSessionState.SharedPoolEnabled)),
+            ExtendedSaveTypes.PropertyFunc<PillPoolSessionState, bool>(nameof(PillPoolSessionState.HasSharedPool)),
+            ExtendedSaveTypes.PropertyFunc<PillPoolSessionState, PillPoolState>(nameof(PillPoolSessionState.SharedPool)));
 
         if (!PillPoolService.State.RegisterCustomSave())
         {
             throw new System.InvalidOperationException("InstantPill could not register its per-player pool save field.");
+        }
+
+        if (!PillPoolService.SessionState.RegisterCustomSave())
+        {
+            throw new System.InvalidOperationException("InstantPill could not register its run-level pool-session save field.");
         }
 
         _registered = true;

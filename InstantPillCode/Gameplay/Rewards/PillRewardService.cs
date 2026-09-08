@@ -35,7 +35,7 @@ public static class PillRewardService
             return existingState;
         }
 
-        PillRewardRulesSnapshot rules = PillRewardSettings.CreateRulesForNewRun(PillPoolRules.PoolSize);
+        PillRewardRulesSnapshot rules = PillMultiplayerRulesService.CreateRulesForNewPlayer(player);
         PillRewardRunState state = new()
         {
             Rules = rules,
@@ -56,6 +56,14 @@ public static class PillRewardService
     public static void AddCombatRewards(Player player, List<Reward> rewards, AbstractRoom? room)
     {
         if (room is not CombatRoom || !IsSupportedRoomType(room.RoomType))
+        {
+            return;
+        }
+
+        // The final Act's boss (including a double-boss encounter) ends the run and has no
+        // normal reward screen in the base game. Do not create state or advance pill RNG here.
+        if (room.RoomType == RoomType.Boss &&
+            player.RunState.CurrentActIndex == player.RunState.Acts.Count - 1)
         {
             return;
         }
