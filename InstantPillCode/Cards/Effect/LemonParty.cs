@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 
@@ -27,6 +28,10 @@ public sealed class LemonParty : BaseEffectPillCard
     protected override int StrengthAmount => 0;
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade1;
+
+    // The highlighted Demise text needs an explicit power hover tip, just like original cards
+    // which apply Poison, Vulnerable, or other powers.
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<DemisePower>()];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

@@ -65,7 +65,7 @@
   "INSTANTPILL-PHEROMONES.title": "信息素",
   "INSTANTPILL-PHEROMONES.description": "[gold]击晕[/gold]所有敌人。",
   "INSTANTPILL-LEMON_PARTY.title": "柠檬派对",
-  "INSTANTPILL-LEMON_PARTY.description": "给予所有敌人2层消亡。",
+  "INSTANTPILL-LEMON_PARTY.description": "给予所有敌人2层[gold]消亡[/gold]。",
   "INSTANTPILL-R_U_A_WIZARD.title": "你是巫师吗？",
   "INSTANTPILL-R_U_A_WIZARD.description": "[gold]变化[/gold]一张手牌。",
   "INSTANTPILL-PERCS.title": "止痛药！",
