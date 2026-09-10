@@ -15,7 +15,7 @@ namespace InstantPill.InstantPillCode.Cards.Effect;
 
 /// <summary>
 /// A grade-2 pill that takes up to 12% maximum-HP loss without being lethal,
-/// then permanently adds three base Hearts to the owner's deck.
+/// then permanently adds a random one to four base Hearts to the owner's deck.
 /// </summary>
 [CustomID("INSTANTPILL-HEMATEMESIS")]
 public sealed class Hematemesis : BaseEffectPillCard
@@ -23,7 +23,8 @@ public sealed class Hematemesis : BaseEffectPillCard
     private const string SoundPath = "res://audio/hematemisis 1.wav";
     private const float SoundVolume = 1f;
     private const decimal HpLossPercent = 0.12m;
-    private const int HeartCount = 3;
+    private const int MinHeartCount = 1;
+    private const int MaxHeartCount = 4;
 
     protected override int StrengthAmount => 0;
 
@@ -54,8 +55,10 @@ public sealed class Hematemesis : BaseEffectPillCard
                 cardPlay);
         }
 
-        var addedHearts = new List<CardPileAddResult>(HeartCount);
-        for (int index = 0; index < HeartCount; index++)
+        int heartCount = MinHeartCount + Owner.RunState.Rng.CombatCardSelection.NextInt(
+            MaxHeartCount - MinHeartCount + 1);
+        var addedHearts = new List<CardPileAddResult>(heartCount);
+        for (int index = 0; index < heartCount; index++)
         {
             Heart heart = Owner.RunState.CreateCard<Heart>(Owner);
             addedHearts.Add(await CardPileCmd.Add(heart, PileType.Deck));

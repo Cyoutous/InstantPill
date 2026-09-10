@@ -5,6 +5,7 @@ using InstantPill.InstantPillCode.Audio;
 using InstantPill.InstantPillCode.Cards.Effect;
 using InstantPill.InstantPillCode.Content;
 using InstantPill.InstantPillCode.Gameplay.Effects;
+using InstantPill.InstantPillCode.Gameplay.PHD;
 using InstantPill.InstantPillCode.Gameplay.Pools;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
@@ -75,8 +76,9 @@ internal static class MysteryPillPlaySubstitutionPatch
         // needed for the saved mapping before that happens.
         var owner = mysteryCard.Owner;
         string mysteryCardId = mysteryCard.Id.Entry;
-        string playedEffectCardId = effectCardId;
-        bool isQuestionMarks = string.Equals(effectCardId, QuestionMarks.CardId, StringComparison.Ordinal);
+        string materializedEffectCardId = PillPhdResolver.ResolveEffectCardId(owner, effectCardId);
+        string playedEffectCardId = materializedEffectCardId;
+        bool isQuestionMarks = string.Equals(materializedEffectCardId, QuestionMarks.CardId, StringComparison.Ordinal);
         if (isQuestionMarks)
         {
             if (!QuestionMarksPlaySubstitutionPatch.TrySelectRandomEffect(

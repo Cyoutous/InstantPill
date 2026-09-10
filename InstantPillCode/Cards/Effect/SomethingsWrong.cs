@@ -24,6 +24,8 @@ public sealed class SomethingsWrong : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade0;
 
+    public override string? PhdReplacementCardId => "INSTANTPILL-I_FOUND_PILLS";
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // Match Breakthrough's HP-loss presentation: its damage command is what

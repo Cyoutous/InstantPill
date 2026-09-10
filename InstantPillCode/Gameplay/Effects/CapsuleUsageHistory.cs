@@ -75,7 +75,14 @@ public static class CapsuleUsageHistory
         string cardId = LastNonVurpCapsuleId.Get(player) ?? string.Empty;
         if (string.IsNullOrWhiteSpace(cardId))
         {
+            // The pool-roll path materializes its selected source through PHD.
             cardId = Pools.PillPoolService.RollCapsuleCardIdExcluding(player, Vurp.CardId);
+        }
+        else
+        {
+            // A recorded identity can have been played before PHD was acquired. Resolve it at
+            // the moment Vurp creates the new card so Vurp is never an escape hatch from PHD.
+            cardId = Pools.PillPoolService.ResolveCapsuleCardIdForPlayer(player, cardId);
         }
 
         CardModel canonicalCard = ModelDb.GetById<CardModel>(

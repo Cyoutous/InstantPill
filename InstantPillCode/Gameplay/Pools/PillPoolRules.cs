@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using InstantPill.InstantPillCode.Cards.Effect;
+using InstantPill.InstantPillCode.Gameplay.PHD;
 
 namespace InstantPill.InstantPillCode.Gameplay.Pools;
 
@@ -42,5 +43,6 @@ public static class PillPoolRules
             throw new InvalidOperationException("InstantPill pool size exceeds the available mystery pill models.");
         }
 
+        PillPhdResolver.ValidateReplacementMetadata(PillPoolCatalog.EffectPillIds);
     }
 }

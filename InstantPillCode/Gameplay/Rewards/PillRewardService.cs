@@ -181,19 +181,22 @@ public static class PillRewardService
         ISet<string> offeredCardIds)
     {
         int choiceCount = GetChoiceCount(state.Rules, roomType);
-        IReadOnlyList<string> cardIds = SelectCapsuleCardIds(player, state, choiceCount, offeredCardIds);
-        if (cardIds.Count == 0)
+        IReadOnlyList<string> sourceCardIds = SelectCapsuleCardIds(player, state, choiceCount, offeredCardIds);
+        if (sourceCardIds.Count == 0)
         {
             MainFile.Logger.Warn("InstantPill rolled a capsule reward but found no valid capsule choices.");
             return null;
         }
 
-        List<CardModel> cards = cardIds
+        // Selection and duplicate prevention remain based on the raw pool identities. PHD is
+        // only applied when the chosen entry becomes a concrete card for this player.
+        List<CardModel> cards = sourceCardIds
+            .Select(cardId => PillPoolService.ResolveCapsuleCardIdForPlayer(player, cardId))
             .Select(cardId => ModelDb.GetById<CardModel>(
                 new ModelId(ModelId.SlugifyCategory<CardModel>(), cardId)))
             .Select(canonicalCard => player.RunState.CreateCard(canonicalCard, player))
             .ToList();
-        foreach (string cardId in cardIds)
+        foreach (string cardId in sourceCardIds)
         {
             offeredCardIds.Add(cardId);
         }

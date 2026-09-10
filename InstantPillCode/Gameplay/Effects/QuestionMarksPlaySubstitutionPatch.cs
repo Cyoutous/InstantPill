@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using InstantPill.InstantPillCode.Audio;
 using InstantPill.InstantPillCode.Cards.Effect;
+using InstantPill.InstantPillCode.Gameplay.PHD;
 using InstantPill.InstantPillCode.Gameplay.Pools;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Context;
@@ -58,14 +59,21 @@ internal static class QuestionMarksPlaySubstitutionPatch
     }
 
     /// <summary>
-    /// Selects Question Marks' proxy effect using the combat RNG. The pool is deliberately the
-    /// complete eligible effect catalogue, rather than this run's candidate-effect pool.
+    /// Selects Question Marks' proxy source using combat RNG, then materializes that source for
+    /// this player through PHD. The source pool is deliberately the complete eligible catalogue,
+    /// rather than this run's candidate-effect pool.
     /// </summary>
     internal static bool TrySelectRandomEffect(Player player, string excludedCardId, out string selectedEffectId)
     {
         string[] candidates = PillPoolCatalog.EffectPillIds
             .Where(id => !string.Equals(id, excludedCardId, StringComparison.Ordinal))
             .Where(PillPoolService.IsEligibleEffectPill)
+            // A PHD mapping to Question Marks would otherwise make the proxy recursively
+            // substitute itself. The random effect must always resolve to a real effect pill.
+            .Where(id => !string.Equals(
+                PillPhdResolver.ResolveEffectCardId(player, id),
+                QuestionMarks.CardId,
+                StringComparison.Ordinal))
             .ToArray();
         if (candidates.Length == 0)
         {
@@ -73,7 +81,8 @@ internal static class QuestionMarksPlaySubstitutionPatch
             return false;
         }
 
-        selectedEffectId = candidates[player.RunState.Rng.CombatCardGeneration.NextInt(candidates.Length)];
+        string selectedSourceId = candidates[player.RunState.Rng.CombatCardGeneration.NextInt(candidates.Length)];
+        selectedEffectId = PillPhdResolver.ResolveEffectCardId(player, selectedSourceId);
         return true;
     }
 

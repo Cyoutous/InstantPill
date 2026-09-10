@@ -29,6 +29,8 @@ public sealed class ImExcited : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade2;
 
+    public override string? PhdReplacementCardId => "INSTANTPILL-PHD_IM_EXCITED";
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new EnergyVar(EnergyToGain)

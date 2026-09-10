@@ -27,6 +27,8 @@ public sealed class ImDrowsy : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade2;
 
+    public override string? PhdReplacementCardId => "INSTANTPILL-PHD_IM_DROWSY";
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         HoverTipFactory.FromPower<StrengthPower>()

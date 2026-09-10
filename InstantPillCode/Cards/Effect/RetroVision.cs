@@ -21,6 +21,8 @@ public sealed class RetroVision : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade0;
 
+    public override string? PhdReplacementCardId => "INSTANTPILL-I_CAN_SEE_FOREVER";
+
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (LocalContext.IsMine(this))

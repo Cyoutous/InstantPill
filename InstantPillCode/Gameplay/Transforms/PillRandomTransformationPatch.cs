@@ -55,19 +55,20 @@ internal static class PillRandomTransformationPatch
                 "InstantPill cannot randomly transform a capsule because this run has no alternate capsule-pool identity.");
         }
 
-        string? selectedId = rng.NextItem(candidateIds);
-        if (selectedId == null)
+        string? selectedSourceId = rng.NextItem(candidateIds);
+        if (selectedSourceId == null)
         {
             throw new InvalidOperationException("InstantPill could not select a random capsule transformation target.");
         }
 
+        string selectedId = PillPoolService.ResolveCapsuleCardIdForPlayer(original.Owner, selectedSourceId);
         CardModel canonicalCard = ModelDb.GetById<CardModel>(
             new ModelId(ModelId.SlugifyCategory<CardModel>(), selectedId));
         ICardScope scope = original.CardScope
             ?? throw new InvalidOperationException("InstantPill cannot transform a capsule outside a card scope.");
         __result = scope.CreateCard(canonicalCard, original.Owner);
         MainFile.Logger.Info(
-            $"Redirected random capsule transformation {original.Id.Entry} -> {selectedId} for player {original.Owner.NetId}.",
+            $"Redirected random capsule transformation {original.Id.Entry} -> {selectedSourceId} -> {selectedId} for player {original.Owner.NetId}.",
             1);
         return false;
     }

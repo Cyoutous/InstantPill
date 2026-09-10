@@ -4,6 +4,7 @@ using System.Linq;
 using BaseLib.Utils;
 using InstantPill.InstantPillCode;
 using InstantPill.InstantPillCode.Cards.Effect;
+using InstantPill.InstantPillCode.Gameplay.PHD;
 using InstantPill.InstantPillCode.Gameplay.Rewards;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -166,8 +167,8 @@ public static class PillPoolService
     }
 
     /// <summary>
-    /// Randomly selects a capsule-pool slot without removing it. The returned entry is a mystery
-    /// card before that slot is revealed, or its mapped effect card afterward.
+    /// Randomly selects a capsule-pool slot without removing it. The original slot is selected
+    /// first; its returned card identity is then materialized for this player, including PHD.
     /// </summary>
     public static string RollCapsuleCardId(Player player)
     {
@@ -175,8 +176,28 @@ public static class PillPoolService
     }
 
     /// <summary>
-    /// Randomly selects a capsule-pool slot while excluding one current card identity. This still
-    /// rolls slots rather than distinct identities, preserving the normal pool's slot weighting.
+    /// Selects one original assigned effect from this run's capsule slots, then materializes it
+    /// for the supplied player. PHD uses this on pickup before it reveals the slots, so the card
+    /// awarded is an identified effect pill rather than an additional mystery pill.
+    /// </summary>
+    public static string RollAssignedEffectCardIdForPlayer(Player player)
+    {
+        PillPoolState state = EnsureInitialized(player);
+        if (state.CapsuleSlots.Count == 0)
+        {
+            throw new InvalidOperationException("InstantPill cannot roll an assigned effect from an empty capsule pool.");
+        }
+
+        Rng rng = NextPoolRng(GetPoolRngOwner(player), state);
+        PillPoolSlotState slot = state.CapsuleSlots[rng.NextInt(state.CapsuleSlots.Count)];
+        PersistPoolState(player, state);
+        return PillPhdResolver.ResolveEffectCardId(player, slot.AssignedEffectPillId);
+    }
+
+    /// <summary>
+    /// Randomly selects a capsule-pool slot while excluding one original current identity. This
+    /// still rolls slots rather than distinct identities, preserving normal slot weighting before
+    /// PHD materializes the selected result for its owner.
     /// </summary>
     public static string RollCapsuleCardIdExcluding(Player player, string? excludedCardId)
     {
@@ -192,7 +213,31 @@ public static class PillPoolService
         Rng rng = NextPoolRng(GetPoolRngOwner(player), state);
         PillPoolSlotState slot = candidates[rng.NextInt(candidates.Count)];
         PersistPoolState(player, state);
-        return slot.CurrentCardId;
+        return ResolveSlotCardIdForPlayer(player, slot);
+    }
+
+    /// <summary>
+    /// Resolves a slot's current card identity for one player. An unrevealed slot remains its
+    /// mystery pill; a revealed slot retains its original assigned effect in save data but may
+    /// materialize as that effect's PHD replacement.
+    /// </summary>
+    public static string ResolveSlotCardIdForPlayer(Player player, PillPoolSlotState slot) =>
+        slot.IsRevealed
+            ? PillPhdResolver.ResolveEffectCardId(player, slot.AssignedEffectPillId)
+            : slot.MysteryPillId;
+
+    /// <summary>
+    /// Applies PHD to a known capsule identity without mutating any pool state. This is used by
+    /// pathways such as Vurp which may begin from a previously materialized capsule ID.
+    /// </summary>
+    public static string ResolveCapsuleCardIdForPlayer(Player player, string cardId)
+    {
+        if (PillPoolCatalog.EffectPillIds.Contains(cardId, StringComparer.Ordinal))
+        {
+            return PillPhdResolver.ResolveEffectCardId(player, cardId);
+        }
+
+        return cardId;
     }
 
     /// <summary>
@@ -233,6 +278,35 @@ public static class PillPoolService
         return state?.CapsuleSlots
             .FirstOrDefault(slot => slot.AssignedEffectPillId == effectPillId)
             ?.MysteryPillId;
+    }
+
+    /// <summary>
+    /// Returns the first selected source slot whose PHD replacement is <paramref name="effectPillId"/>,
+    /// but only when the requested effect was not selected itself. This derives a display-only
+    /// portrait alias from immutable pool data; it neither initializes a pool nor changes a save.
+    /// </summary>
+    public static string? TryGetPhdInheritedMysteryPillId(Player player, string effectPillId)
+    {
+        PillPoolState? state = TryGetExistingPoolState(player);
+        if (state == null || state.CapsuleSlots.Any(slot => slot.AssignedEffectPillId == effectPillId))
+        {
+            return null;
+        }
+
+        foreach (PillPoolSlotState slot in state.CapsuleSlots)
+        {
+            CardModel canonicalCard = ModelDb.GetById<CardModel>(
+                new ModelId(ModelId.SlugifyCategory<CardModel>(), slot.AssignedEffectPillId));
+            if (canonicalCard is BaseEffectPillCard effectPill &&
+                string.Equals(effectPill.PhdReplacementCardId, effectPillId, StringComparison.Ordinal))
+            {
+                // CapsuleSlots retain the selected candidate order, making this deterministic
+                // when multiple sources someday share one PHD replacement target.
+                return slot.MysteryPillId;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>

@@ -26,6 +26,8 @@ public sealed class BadTrip : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade1;
 
+    public override string? PhdReplacementCardId => "INSTANTPILL-PHD_BAD_TRIP";
+
     // These are the original card-frame glow hooks.  Their conditions mirror the
     // branch used on play, so the hand preview always communicates the result.
     protected override bool ShouldGlowGoldInternal => IsAtOrBelowHalfHealth;

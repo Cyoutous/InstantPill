@@ -15,6 +15,13 @@ namespace InstantPill.InstantPillCode.Cards.Effect;
 public abstract class BaseEffectPillCard : BasePillCard
 {
     /// <summary>
+    /// The identified effect which replaces this pill for a player holding PHD.
+    /// This is static card metadata rather than run state: the run's mystery-to-effect
+    /// mapping always retains this card's original ID.
+    /// </summary>
+    public virtual string? PhdReplacementCardId => null;
+
+    /// <summary>
     /// Identified effect pills use the combat consume visual in place of the normal Power-card
     /// flight. Mystery pills deliberately do not inherit this marker, so they retain the base
     /// Power presentation until they reveal into an effect pill.

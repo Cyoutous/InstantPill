@@ -56,6 +56,11 @@ public static class PillPoolCatalog
             .Append("INSTANTPILL-LUCK_DOWN")
             .Append("INSTANTPILL-LUCK_UP")
             .Append("INSTANTPILL-EXPERIMENTAL_PILL")
+            .Append("INSTANTPILL-TEARS_DOWN")
+            .Append("INSTANTPILL-TEARS_UP")
+            .Append("INSTANTPILL-PHD_IM_DROWSY")
+            .Append("INSTANTPILL-PHD_IM_EXCITED")
+            .Append("INSTANTPILL-PHD_BAD_TRIP")
             .ToArray();
 
     private static string[] CreateIds(string family, int count) =>
