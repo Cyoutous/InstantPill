@@ -23,6 +23,8 @@ public sealed class Amnesia : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade2;
 
+    public override string? PhdReplacementCardId => "INSTANTPILL-I_CAN_SEE_FOREVER";
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (LocalContext.IsMine(this))

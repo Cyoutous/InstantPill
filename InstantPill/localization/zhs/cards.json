@@ -113,7 +113,7 @@
   "INSTANTPILL-BAD_TRIP.title": "过激幻觉",
   "INSTANTPILL-BAD_TRIP.description": "失去最大生命值的5%。\n如果生命值低于或等于50%，改为回复最大生命值的15%。",
   "INSTANTPILL-PHD_BAD_TRIP.title": "过激幻觉",
-  "INSTANTPILL-PHD_BAD_TRIP.description": "回复最大生命值的5%。\n如果生命值低于50%。改为回复最大生命值的15%。",
+  "INSTANTPILL-PHD_BAD_TRIP.description": "回复最大生命值的5%。\n如果生命值低于或等于50%，改为回复最大生命值的15%。",
   "INSTANTPILL-BALLS_OF_STEEL.title": "钢铁双蛋",
   "INSTANTPILL-BALLS_OF_STEEL.description": "获得{Block:diff()}点[gold]格挡[/gold]。\n你的下一回合开始时[gold]格挡[/gold]不会消失。",
   "INSTANTPILL-FULL_HEALTH.title": "生命回满",
@@ -149,5 +149,7 @@
   "INSTANTPILL-LUCK_UP.title": "运气上升",
   "INSTANTPILL-LUCK_UP.description": "战斗后金币奖励数量翻倍。",
   "INSTANTPILL-EXPERIMENTAL_PILL.title": "实验性胶囊",
-  "INSTANTPILL-EXPERIMENTAL_PILL.description": "获得1个随机正面效果和1个随机负面效果。"
+  "INSTANTPILL-EXPERIMENTAL_PILL.description": "获得1个随机正面效果和1个随机负面效果。",
+  "INSTANTPILL-PHD_EXPERIMENTAL_PILL.title": "实验性胶囊",
+  "INSTANTPILL-PHD_EXPERIMENTAL_PILL.description": "获得1个随机正面效果。"
 }

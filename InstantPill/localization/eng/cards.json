@@ -166,7 +166,7 @@
   "INSTANTPILL-BAD_TRIP.title": "Bad Trip",
   "INSTANTPILL-BAD_TRIP.description": "Lose 5% of your Max HP.\nIf your HP is at or below 50%, heal 15% of your Max HP instead.",
   "INSTANTPILL-PHD_BAD_TRIP.title": "Bad Trip",
-  "INSTANTPILL-PHD_BAD_TRIP.description": "Heal 5% of your Max HP.\nIf you have less than 50% HP, heal 15% of your Max HP instead.",
+  "INSTANTPILL-PHD_BAD_TRIP.description": "Heal 5% of your Max HP.\nIf your HP is at or below 50%, heal 15% of your Max HP instead.",
   "INSTANTPILL-BALLS_OF_STEEL.title": "Balls of Steel",
   "INSTANTPILL-BALLS_OF_STEEL.description": "Gain {Block:diff()} [gold]Block[/gold].\nYour [gold]Block[/gold] does not expire at the start of your next turn.",
   "INSTANTPILL-FULL_HEALTH.title": "Full Health",
@@ -202,5 +202,7 @@
   "INSTANTPILL-LUCK_UP.title": "LuckUp",
   "INSTANTPILL-LUCK_UP.description": "Double the Gold reward after combat.",
   "INSTANTPILL-EXPERIMENTAL_PILL.title": "Experimental Pill",
-  "INSTANTPILL-EXPERIMENTAL_PILL.description": "Gain 1 random positive effect and 1 random negative effect."
+  "INSTANTPILL-EXPERIMENTAL_PILL.description": "Gain 1 random positive effect and 1 random negative effect.",
+  "INSTANTPILL-PHD_EXPERIMENTAL_PILL.title": "Experimental Pill",
+  "INSTANTPILL-PHD_EXPERIMENTAL_PILL.description": "Gain 1 random positive effect."
 }
