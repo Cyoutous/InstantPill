@@ -22,6 +22,8 @@ public sealed class LuckDown : BaseEffectPillCard
 
     public override string? PhdReplacementCardId => "INSTANTPILL-LUCK_UP";
 
+    public override bool IsExtremelyPowerfulEffect => true;
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (LocalContext.IsMine(this))

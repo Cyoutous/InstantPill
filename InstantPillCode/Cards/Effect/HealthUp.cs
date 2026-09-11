@@ -20,6 +20,8 @@ public sealed class HealthUp : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade3;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-HEALTH_DOWN";
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (LocalContext.IsMine(this))

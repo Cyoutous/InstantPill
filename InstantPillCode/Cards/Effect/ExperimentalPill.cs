@@ -68,6 +68,8 @@ public sealed class ExperimentalPill : BaseEffectPillCard
 
     public override string? PhdReplacementCardId => "INSTANTPILL-PHD_EXPERIMENTAL_PILL";
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-FPHD_EXPERIMENTAL_PILL";
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (LocalContext.IsMine(this))

@@ -23,6 +23,8 @@ public sealed class PrettyFly : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade2;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-LUCK_DOWN";
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         HoverTipFactory.Static(StaticHoverTip.Channeling),

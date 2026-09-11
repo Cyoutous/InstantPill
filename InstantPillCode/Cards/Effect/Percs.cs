@@ -25,6 +25,8 @@ public sealed class Percs : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade2;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-ADDICTED";
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         new HoverTip(

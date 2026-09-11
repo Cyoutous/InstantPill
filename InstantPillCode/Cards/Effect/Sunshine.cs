@@ -30,6 +30,8 @@ public sealed class Sunshine : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade3;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-RETRO_VISION";
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         HoverTipFactory.FromPower<StrengthPower>(),

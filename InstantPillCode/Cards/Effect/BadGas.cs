@@ -33,6 +33,8 @@ public sealed class BadGas : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade1;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-HEALTH_DOWN";
+
     // Uses the original Poison power's localized title and description in the normal card hover UI.
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<PoisonPower>()];
 

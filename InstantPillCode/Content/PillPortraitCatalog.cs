@@ -88,15 +88,15 @@ public static class PillPortraitCatalog
             return GetMysteryPortraitPath(mysteryPillId);
         }
 
-        // A PHD result which was not selected into this run's candidate pool inherits the
-        // mystery portrait of its first selected PHD source. The relationship is derived from
-        // static card metadata plus slot order and remains independent of save-state mutation.
-        string? phdInheritedMysteryPillId = PillPoolService.TryGetPhdInheritedMysteryPillId(
+        // A PHD or False PHD result which was not selected into this run's candidate pool
+        // inherits the mystery portrait of its first selected source. The relationship follows
+        // the owner's current pharmacy-relic resolution without mutating the saved pool.
+        string? inheritedMysteryPillId = PillPoolService.TryGetInheritedMysteryPillIdForMaterializedEffect(
             owner,
             effectPill.Id.Entry);
-        if (phdInheritedMysteryPillId != null)
+        if (inheritedMysteryPillId != null)
         {
-            return GetMysteryPortraitPath(phdInheritedMysteryPillId);
+            return GetMysteryPortraitPath(inheritedMysteryPillId);
         }
 
         string? questionMarksMysteryPillId = PillPoolService.TryGetMysteryPillIdForAssignedEffect(

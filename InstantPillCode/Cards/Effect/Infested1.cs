@@ -29,6 +29,8 @@ public sealed class Infested1 : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade2;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-TEARS_DOWN";
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         HoverTipFactory.FromKeyword(InstantPillKeywords.StatusCard),

@@ -1,4 +1,5 @@
 using System;
+using InstantPill.InstantPillCode.Configuration;
 using MegaCrit.Sts2.Core.Multiplayer.Serialization;
 
 namespace InstantPill.InstantPillCode.Gameplay.Rewards;
@@ -10,7 +11,7 @@ namespace InstantPill.InstantPillCode.Gameplay.Rewards;
 /// </summary>
 public sealed class PillMultiplayerRulesSnapshot
 {
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = 3;
 
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
 
@@ -39,7 +40,7 @@ public sealed class PillMultiplayerRulesSnapshot
         {
             SchemaVersion = reader.ReadInt()
         };
-        if (snapshot.SchemaVersion != CurrentSchemaVersion)
+        if (snapshot.SchemaVersion is not 1 and not 2 and not CurrentSchemaVersion)
         {
             throw new InvalidOperationException(
                 $"Unsupported InstantPill multiplayer-rules schema {snapshot.SchemaVersion}.");
@@ -47,7 +48,10 @@ public sealed class PillMultiplayerRulesSnapshot
 
         snapshot.HostSynchronizesParameters = reader.ReadBool();
         snapshot.HostEnablesSharedPillPool = reader.ReadBool();
-        snapshot.RewardRules = DeserializeRewardRules(reader);
+        snapshot.RewardRules = DeserializeRewardRules(
+            reader,
+            snapshot.SchemaVersion >= 2,
+            snapshot.SchemaVersion >= 3);
         return snapshot;
     }
 
@@ -65,13 +69,18 @@ public sealed class PillMultiplayerRulesSnapshot
         writer.WriteInt(rules.EliteGuaranteedRewardCount);
         writer.WriteInt(rules.BossGuaranteedRewardCount);
         writer.WriteInt(rules.InitialMysteryPillCount);
+        writer.WriteString(rules.PhdRelicRarity);
+        writer.WriteString(rules.FalsePhdRelicRarity);
         writer.WriteBool(rules.EnableNormalRewards);
         writer.WriteBool(rules.EnableEliteRewards);
         writer.WriteBool(rules.EnableBossRewards);
         writer.WriteBool(rules.PreventDuplicateCapsuleOptionsWithinCombat);
     }
 
-    private static PillRewardRulesSnapshot DeserializeRewardRules(PacketReader reader) => new()
+    private static PillRewardRulesSnapshot DeserializeRewardRules(
+        PacketReader reader,
+        bool hasPhdRelicRarity,
+        bool hasFalsePhdRelicRarity) => new()
     {
         IndependentDrop = DeserializeOdds(reader),
         PotionReplacement = DeserializeOdds(reader),
@@ -85,6 +94,8 @@ public sealed class PillMultiplayerRulesSnapshot
         EliteGuaranteedRewardCount = reader.ReadInt(),
         BossGuaranteedRewardCount = reader.ReadInt(),
         InitialMysteryPillCount = reader.ReadInt(),
+        PhdRelicRarity = hasPhdRelicRarity ? reader.ReadString() : PhdRelicRarityRules.DefaultValue,
+        FalsePhdRelicRarity = hasFalsePhdRelicRarity ? reader.ReadString() : PhdRelicRarityRules.DefaultValue,
         EnableNormalRewards = reader.ReadBool(),
         EnableEliteRewards = reader.ReadBool(),
         EnableBossRewards = reader.ReadBool(),

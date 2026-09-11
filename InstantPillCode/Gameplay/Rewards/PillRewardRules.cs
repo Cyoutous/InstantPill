@@ -1,4 +1,5 @@
 using System;
+using InstantPill.InstantPillCode.Configuration;
 
 namespace InstantPill.InstantPillCode.Gameplay.Rewards;
 
@@ -40,6 +41,8 @@ public static class PillRewardDefaults
         EliteGuaranteedRewardCount = 1,
         BossGuaranteedRewardCount = 2,
         InitialMysteryPillCount = 1,
+        PhdRelicRarity = PhdRelicRarityRules.DefaultValue,
+        FalsePhdRelicRarity = PhdRelicRarityRules.DefaultValue,
         EnableNormalRewards = true,
         EnableEliteRewards = true,
         EnableBossRewards = true,
@@ -117,6 +120,12 @@ public sealed class PillRewardRulesSnapshot
     /// <summary>How many mystery capsules each player receives directly in their starting deck.</summary>
     public int InitialMysteryPillCount { get; set; }
 
+    /// <summary>Configured PHD pool; frozen at run creation alongside the other gameplay rules.</summary>
+    public string PhdRelicRarity { get; set; } = PhdRelicRarityRules.DefaultValue;
+
+    /// <summary>Configured False PHD pool; frozen at run creation alongside the other gameplay rules.</summary>
+    public string FalsePhdRelicRarity { get; set; } = PhdRelicRarityRules.DefaultValue;
+
     public bool EnableNormalRewards { get; set; }
 
     public bool EnableEliteRewards { get; set; }
@@ -139,6 +148,8 @@ public sealed class PillRewardRulesSnapshot
         EliteGuaranteedRewardCount = EliteGuaranteedRewardCount,
         BossGuaranteedRewardCount = BossGuaranteedRewardCount,
         InitialMysteryPillCount = InitialMysteryPillCount,
+        PhdRelicRarity = PhdRelicRarity,
+        FalsePhdRelicRarity = FalsePhdRelicRarity,
         EnableNormalRewards = EnableNormalRewards,
         EnableEliteRewards = EnableEliteRewards,
         EnableBossRewards = EnableBossRewards,
@@ -159,5 +170,7 @@ public sealed class PillRewardRulesSnapshot
         EliteGuaranteedRewardCount = Math.Clamp(EliteGuaranteedRewardCount, 0, maximumChoices);
         BossGuaranteedRewardCount = Math.Clamp(BossGuaranteedRewardCount, 0, maximumChoices);
         InitialMysteryPillCount = Math.Clamp(InitialMysteryPillCount, 0, 1000);
+        PhdRelicRarity = PhdRelicRarityRules.Normalize(PhdRelicRarity);
+        FalsePhdRelicRarity = PhdRelicRarityRules.Normalize(FalsePhdRelicRarity);
     }
 }

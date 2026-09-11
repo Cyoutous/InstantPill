@@ -20,6 +20,8 @@ public sealed class IFoundPills : BaseEffectPillCard
 {
     private const string SoundPath = "res://audio/i found pills 3.wav";
     private const float SoundVolume = 0.6f;
+    private const string DevotedSculptorCastSfx =
+        "event:/sfx/enemy/enemy_attacks/devoted_sculptor/devoted_sculptor_cast";
 
     // The shared test base still requires this member; this card overrides its test Strength play effect.
     protected override int StrengthAmount => 0;
@@ -38,6 +40,9 @@ public sealed class IFoundPills : BaseEffectPillCard
         }
 
         PillAudio.PlayOneShot(SoundPath, SoundVolume);
+        // This is a card-effect sound rather than authored card dialogue, so it intentionally
+        // remains audible when Question Marks proxies I Found Pills.
+        PillAudio.PlayVanillaCardEffect(DevotedSculptorCastSfx);
 
         string text = new LocString("combat_messages", GetThoughtKey()).GetFormattedText();
         NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(

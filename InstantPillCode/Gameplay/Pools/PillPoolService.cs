@@ -281,11 +281,12 @@ public static class PillPoolService
     }
 
     /// <summary>
-    /// Returns the first selected source slot whose PHD replacement is <paramref name="effectPillId"/>,
-    /// but only when the requested effect was not selected itself. This derives a display-only
-    /// portrait alias from immutable pool data; it neither initializes a pool nor changes a save.
+    /// Returns the first selected source slot which currently materializes as
+    /// <paramref name="effectPillId"/> for <paramref name="player"/>, but only when the requested
+    /// effect was not selected itself. This derives a display-only portrait alias from immutable
+    /// pool data; it neither initializes a pool nor changes a save.
     /// </summary>
-    public static string? TryGetPhdInheritedMysteryPillId(Player player, string effectPillId)
+    public static string? TryGetInheritedMysteryPillIdForMaterializedEffect(Player player, string effectPillId)
     {
         PillPoolState? state = TryGetExistingPoolState(player);
         if (state == null || state.CapsuleSlots.Any(slot => slot.AssignedEffectPillId == effectPillId))
@@ -295,13 +296,13 @@ public static class PillPoolService
 
         foreach (PillPoolSlotState slot in state.CapsuleSlots)
         {
-            CardModel canonicalCard = ModelDb.GetById<CardModel>(
-                new ModelId(ModelId.SlugifyCategory<CardModel>(), slot.AssignedEffectPillId));
-            if (canonicalCard is BaseEffectPillCard effectPill &&
-                string.Equals(effectPill.PhdReplacementCardId, effectPillId, StringComparison.Ordinal))
+            string materializedEffectId = PillPhdResolver.ResolveEffectCardId(
+                player,
+                slot.AssignedEffectPillId);
+            if (string.Equals(materializedEffectId, effectPillId, StringComparison.Ordinal))
             {
                 // CapsuleSlots retain the selected candidate order, making this deterministic
-                // when multiple sources someday share one PHD replacement target.
+                // when multiple sources share the same PHD or False PHD replacement target.
                 return slot.MysteryPillId;
             }
         }

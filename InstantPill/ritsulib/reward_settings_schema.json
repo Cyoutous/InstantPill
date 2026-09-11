@@ -50,9 +50,6 @@
             { "id": "enable_elite_rewards", "type": "toggle", "key": "enable_elite_rewards", "label": { "langMap": { "zhs": "精英战启用掉落", "en": "Enable elite rewards" }, "fallback": "Enable elite rewards" }, "defaultValue": true, "scope": "global" },
             { "id": "enable_boss_rewards", "type": "toggle", "key": "enable_boss_rewards", "label": { "langMap": { "zhs": "首领战启用掉落", "en": "Enable boss rewards" }, "fallback": "Enable boss rewards" }, "defaultValue": true, "scope": "global" },
             { "id": "prevent_duplicate_options", "type": "toggle", "key": "prevent_duplicate_options", "label": { "langMap": { "zhs": "同场胶囊选项不重复", "en": "Avoid duplicate pill options in one combat" }, "fallback": "Avoid duplicate pill options in one combat" }, "defaultValue": false, "scope": "global" },
-            { "id": "multiplayer_settings_heading", "type": "header", "label": { "langMap": { "zhs": "多人模式", "en": "Multiplayer" }, "fallback": "Multiplayer" } },
-            { "id": "sync_multiplayer_parameters_with_host", "type": "toggle", "key": "sync_multiplayer_parameters_with_host", "label": { "langMap": { "zhs": "多人模式参数配置与房主一致", "en": "Sync multiplayer parameters with host" }, "fallback": "Sync multiplayer parameters with host" }, "description": { "langMap": { "zhs": "仅房主的设置生效。开启后，本局所有玩家使用房主的完整胶囊参数配置。", "en": "Only the host's setting takes effect. When enabled, all players in this run use the host's complete pill configuration." }, "fallback": "Only the host's setting takes effect." }, "defaultValue": true, "scope": "global" },
-            { "id": "enable_shared_multiplayer_pill_pool", "type": "toggle", "key": "enable_shared_multiplayer_pill_pool", "label": { "langMap": { "zhs": "开启多人胶囊池同步", "en": "Synchronize multiplayer pill pool" }, "fallback": "Synchronize multiplayer pill pool" }, "description": { "langMap": { "zhs": "仅当房主开启“多人模式参数配置与房主一致”时生效。开启后，所有玩家共享效果池、未知胶囊映射和揭示状态。", "en": "Only takes effect when the host enables parameter synchronization. When enabled, all players share the effect pool, mystery-pill mappings, and reveal state." }, "fallback": "Only takes effect when the host enables parameter synchronization." }, "defaultValue": false, "scope": "global" },
             { "id": "next_run_notice", "type": "info-card", "label": { "langMap": { "zhs": "说明", "en": "Note" }, "fallback": "Note" }, "body": { "langMap": { "zhs": "设置将在下一局新开局时生效；正在进行的局会保留开局时的规则。", "en": "Changes apply to the next new run. A current run keeps its saved rules." }, "fallback": "Changes apply to the next new run." } },
             { "id": "save_settings", "type": "button", "key": "save_settings", "label": { "langMap": { "zhs": "保存当前设置", "en": "Save current settings" }, "fallback": "Save current settings" }, "buttonText": { "langMap": { "zhs": "保存", "en": "Save" }, "fallback": "Save" }, "tone": "accent" },
             { "id": "reset_defaults", "type": "button", "key": "reset_defaults", "label": { "langMap": { "zhs": "恢复默认值", "en": "Restore defaults" }, "fallback": "Restore defaults" }, "buttonText": { "langMap": { "zhs": "恢复默认值", "en": "Restore defaults" }, "fallback": "Restore defaults" }, "tone": "accent" }
@@ -62,7 +59,7 @@
     },
       {
         "pageId": "starting_deck",
-        "title": { "langMap": { "zhs": "起始牌组", "en": "Starting Deck" }, "fallback": "Starting Deck" },
+        "title": { "langMap": { "zhs": "玩法设置", "en": "Gameplay Settings" }, "fallback": "Gameplay Settings" },
         "sections": [
           {
             "id": "starting_mystery_pills",
@@ -70,6 +67,28 @@
             "entries": [
               { "id": "initial_mystery_pill_count", "type": "string", "key": "initial_mystery_pill_count", "label": { "langMap": { "zhs": "初始拥有未知胶囊数", "en": "Starting mystery pills" }, "fallback": "Starting mystery pills" }, "description": { "langMap": { "zhs": "新开局时直接加入牌组。范围 0–1000；超过本局胶囊槽位数时会重复抽取。", "en": "Added directly to the deck in a new run. Range: 0–1000; rolls repeat when this exceeds the run's capsule slots." }, "fallback": "Added directly to the deck in a new run. Range: 0–1000." }, "placeholder": { "langMap": { "zhs": "0–1000", "en": "0–1000" }, "fallback": "0–1000" }, "maxLength": 4, "defaultValue": "1", "scope": "global" },
               { "id": "starting_deck_notice", "type": "info-card", "label": { "langMap": { "zhs": "说明", "en": "Note" }, "fallback": "Note" }, "body": { "langMap": { "zhs": "此设置仅在下一局新开局时生效。", "en": "This setting applies only to the next new run." }, "fallback": "This setting applies only to the next new run." } }
+            ]
+          },
+          {
+            "id": "phd_relic",
+            "title": { "langMap": { "zhs": "药学博士证", "en": "PHD" }, "fallback": "PHD" },
+            "entries": [
+              { "id": "phd_relic_rarity", "type": "choice", "presentation": "dropdown", "key": "phd_relic_rarity", "label": { "langMap": { "zhs": "自定义药学博士证稀有度", "en": "PHD rarity" }, "fallback": "PHD rarity" }, "description": { "langMap": { "zhs": "决定药学博士证在下一局出现的遗物池；选择“不加入”时不会生成。", "en": "Controls PHD's relic pool in the next new run. \"Do not add\" prevents it from being generated." }, "fallback": "Controls PHD's relic pool in the next new run." }, "options": [ { "value": "common", "label": "普通 / Common" }, { "value": "uncommon", "label": "罕见 / Uncommon" }, { "value": "rare", "label": "稀有 / Rare" }, { "value": "shop", "label": "商店 / Shop" }, { "value": "none", "label": "不加入 / Do not add" } ], "defaultValue": "shop", "scope": "global" }
+            ]
+          },
+          {
+            "id": "false_phd_relic",
+            "title": { "langMap": { "zhs": "伪造药学博士证", "en": "FalsePHD" }, "fallback": "FalsePHD" },
+            "entries": [
+              { "id": "false_phd_relic_rarity", "type": "choice", "presentation": "dropdown", "key": "false_phd_relic_rarity", "label": { "langMap": { "zhs": "自定义伪造药学博士证稀有度", "en": "FalsePHD rarity" }, "fallback": "FalsePHD rarity" }, "description": { "langMap": { "zhs": "决定伪造药学博士证在下一局出现的遗物池；选择“不加入”时不会生成。", "en": "Controls FalsePHD's relic pool in the next new run. \"Do not add\" prevents it from being generated." }, "fallback": "Controls FalsePHD's relic pool in the next new run." }, "options": [ { "value": "common", "label": "普通 / Common" }, { "value": "uncommon", "label": "罕见 / Uncommon" }, { "value": "rare", "label": "稀有 / Rare" }, { "value": "shop", "label": "商店 / Shop" }, { "value": "none", "label": "不加入 / Do not add" } ], "defaultValue": "shop", "scope": "global" }
+            ]
+          },
+          {
+            "id": "multiplayer_settings",
+            "title": { "langMap": { "zhs": "多人模式", "en": "Multiplayer" }, "fallback": "Multiplayer" },
+            "entries": [
+              { "id": "sync_multiplayer_parameters_with_host", "type": "toggle", "key": "sync_multiplayer_parameters_with_host", "label": { "langMap": { "zhs": "多人模式参数配置与房主一致", "en": "Sync multiplayer parameters with host" }, "fallback": "Sync multiplayer parameters with host" }, "description": { "langMap": { "zhs": "仅房主的设置生效。开启后，本局所有玩家使用房主的完整胶囊参数配置（包括 PHD 与伪造药学博士证遗物稀有度）。", "en": "Only the host's setting takes effect. When enabled, all players in this run use the host's complete pill configuration, including PHD and False PHD relic rarities." }, "fallback": "Only the host's setting takes effect." }, "defaultValue": true, "scope": "global" },
+              { "id": "enable_shared_multiplayer_pill_pool", "type": "toggle", "key": "enable_shared_multiplayer_pill_pool", "label": { "langMap": { "zhs": "开启多人胶囊池同步", "en": "Synchronize multiplayer pill pool" }, "fallback": "Synchronize multiplayer pill pool" }, "description": { "langMap": { "zhs": "仅当房主开启“多人模式参数配置与房主一致”时生效。开启后，所有玩家共享效果池、未知胶囊映射和揭示状态。", "en": "Only takes effect when the host enables parameter synchronization. When enabled, all players share the effect pool, mystery-pill mappings, and reveal state." }, "fallback": "Only takes effect when the host enables parameter synchronization." }, "defaultValue": false, "scope": "global" }
             ]
           }
         ]

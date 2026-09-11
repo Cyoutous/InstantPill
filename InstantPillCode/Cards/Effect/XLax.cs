@@ -26,6 +26,8 @@ public sealed class XLax : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade2;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-SOMETHINGS_WRONG";
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         HoverTipFactory.FromPower<SlipperyPower>()

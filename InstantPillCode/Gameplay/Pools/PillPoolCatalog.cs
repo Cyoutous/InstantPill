@@ -47,7 +47,7 @@ public static class PillPoolCatalog
             .Append("INSTANTPILL-I_CAN_SEE_FOREVER")
             .Append("INSTANTPILL-AMNESIA")
             .Append("INSTANTPILL-GULP")
-            .Append("INSTANTPILL-HURF")
+            .Append("INSTANTPILL-HORF")
             .Append("INSTANTPILL-VURP")
             .Append("INSTANTPILL-HEALTH_DOWN")
             .Append("INSTANTPILL-HEALTH_UP")
@@ -58,10 +58,14 @@ public static class PillPoolCatalog
             .Append("INSTANTPILL-EXPERIMENTAL_PILL")
             .Append("INSTANTPILL-TEARS_DOWN")
             .Append("INSTANTPILL-TEARS_UP")
+            .Append("INSTANTPILL-RANGE_DOWN")
+            .Append("INSTANTPILL-RANGE_UP")
             .Append("INSTANTPILL-PHD_IM_DROWSY")
             .Append("INSTANTPILL-PHD_IM_EXCITED")
             .Append("INSTANTPILL-PHD_BAD_TRIP")
             .Append("INSTANTPILL-PHD_EXPERIMENTAL_PILL")
+            .Append("INSTANTPILL-FPHD_BAD_TRIP")
+            .Append("INSTANTPILL-FPHD_EXPERIMENTAL_PILL")
             .ToArray();
 
     private static string[] CreateIds(string family, int count) =>

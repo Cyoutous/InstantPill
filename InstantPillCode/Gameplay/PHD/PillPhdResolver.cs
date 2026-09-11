@@ -17,49 +17,77 @@ public static class PillPhdResolver
     public static bool HasPhd(Player player) => player.Relics.Any(relic =>
         string.Equals(relic.Id.Entry, PhdRelic.RelicId, StringComparison.Ordinal));
 
+    public static bool HasFalsePhd(Player player) => player.Relics.Any(relic =>
+        string.Equals(relic.Id.Entry, FalsePhdRelic.RelicId, StringComparison.Ordinal));
+
     /// <summary>
-    /// Resolves at most one PHD replacement. Replacement chains are intentionally not followed.
+    /// Resolves at most one pharmacy-relic replacement. PHD and False PHD cancel each other,
+    /// leaving the original effect intact. Replacement chains are intentionally not followed.
     /// </summary>
     public static string ResolveEffectCardId(Player player, string originalEffectCardId)
     {
-        if (!HasPhd(player))
+        bool hasPhd = HasPhd(player);
+        bool hasFalsePhd = HasFalsePhd(player);
+        if (hasPhd == hasFalsePhd)
         {
             return originalEffectCardId;
         }
 
         BaseEffectPillCard effectPill = GetEffectPill(originalEffectCardId);
-        return string.IsNullOrWhiteSpace(effectPill.PhdReplacementCardId)
+        string? replacementId = hasPhd
+            ? effectPill.PhdReplacementCardId
+            : effectPill.FalsePhdReplacementCardId;
+        return string.IsNullOrWhiteSpace(replacementId)
             ? originalEffectCardId
-            : effectPill.PhdReplacementCardId;
+            : replacementId;
     }
 
-    /// <summary>Validates every registered PHD replacement declaration without consuming RNG.</summary>
+    /// <summary>
+    /// Validates every registered PHD and False PHD replacement declaration without consuming RNG.
+    /// </summary>
     public static void ValidateReplacementMetadata(System.Collections.Generic.IEnumerable<string> effectCardIds)
     {
         string[] catalogIds = effectCardIds.ToArray();
         foreach (string effectCardId in catalogIds)
         {
             BaseEffectPillCard effectPill = GetEffectPill(effectCardId);
-            string? replacementId = effectPill.PhdReplacementCardId;
-            if (string.IsNullOrWhiteSpace(replacementId))
-            {
-                continue;
-            }
-
-            if (string.Equals(effectCardId, replacementId, StringComparison.Ordinal))
-            {
-                throw new InvalidOperationException(
-                    $"InstantPill PHD replacement for {effectCardId} cannot target itself.");
-            }
-
-            if (!catalogIds.Contains(replacementId, StringComparer.Ordinal))
-            {
-                throw new InvalidOperationException(
-                    $"InstantPill PHD replacement {effectCardId} -> {replacementId} targets a card outside the effect-pill catalog.");
-            }
-
-            _ = GetEffectPill(replacementId);
+            ValidateReplacementMetadata(
+                catalogIds,
+                effectCardId,
+                effectPill.PhdReplacementCardId,
+                "PHD");
+            ValidateReplacementMetadata(
+                catalogIds,
+                effectCardId,
+                effectPill.FalsePhdReplacementCardId,
+                "False PHD");
         }
+    }
+
+    private static void ValidateReplacementMetadata(
+        string[] catalogIds,
+        string effectCardId,
+        string? replacementId,
+        string relicName)
+    {
+        if (string.IsNullOrWhiteSpace(replacementId))
+        {
+            return;
+        }
+
+        if (string.Equals(effectCardId, replacementId, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"InstantPill {relicName} replacement for {effectCardId} cannot target itself.");
+        }
+
+        if (!catalogIds.Contains(replacementId, StringComparer.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"InstantPill {relicName} replacement {effectCardId} -> {replacementId} targets a card outside the effect-pill catalog.");
+        }
+
+        _ = GetEffectPill(replacementId);
     }
 
     private static BaseEffectPillCard GetEffectPill(string effectCardId)

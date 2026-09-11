@@ -59,6 +59,9 @@ public static class PillRewardSettings
                 case bool booleanValue:
                     config.SetValue(Section, key, booleanValue);
                     break;
+                case string stringValue:
+                    config.SetValue(Section, key, stringValue);
+                    break;
             }
         }
 
@@ -97,6 +100,8 @@ public static class PillRewardSettings
         EliteGuaranteedRewardCountKey => _data.EliteGuaranteedRewardCount,
         BossGuaranteedRewardCountKey => _data.BossGuaranteedRewardCount,
         InitialMysteryPillCountKey => _data.InitialMysteryPillCount,
+        PhdRelicRarityKey => _data.PhdRelicRarity,
+        FalsePhdRelicRarityKey => _data.FalsePhdRelicRarity,
         SyncMultiplayerParametersWithHostKey => _data.SyncMultiplayerParametersWithHost,
         EnableSharedMultiplayerPillPoolKey => _data.EnableSharedMultiplayerPillPool,
         EnableNormalRewardsKey => _data.EnableNormalRewards,
@@ -127,6 +132,21 @@ public static class PillRewardSettings
                 default: return false;
             }
 
+            return true;
+        }
+
+        if (key == PhdRelicRarityKey || key == FalsePhdRelicRarityKey)
+        {
+            string rarity = PhdRelicRarityRules.Normalize(
+                Convert.ToString(value, CultureInfo.InvariantCulture));
+            if (key == PhdRelicRarityKey)
+            {
+                _data.PhdRelicRarity = rarity;
+            }
+            else
+            {
+                _data.FalsePhdRelicRarity = rarity;
+            }
             return true;
         }
 
@@ -199,6 +219,8 @@ public static class PillRewardSettings
             EliteGuaranteedRewardCount = _data.EliteGuaranteedRewardCount,
             BossGuaranteedRewardCount = _data.BossGuaranteedRewardCount,
             InitialMysteryPillCount = _data.InitialMysteryPillCount,
+            PhdRelicRarity = _data.PhdRelicRarity,
+            FalsePhdRelicRarity = _data.FalsePhdRelicRarity,
             EnableNormalRewards = _data.EnableNormalRewards,
             EnableEliteRewards = _data.EnableEliteRewards,
             EnableBossRewards = _data.EnableBossRewards,
@@ -255,6 +277,8 @@ public static class PillRewardSettings
             EliteGuaranteedRewardCount = defaults.EliteGuaranteedRewardCount,
             BossGuaranteedRewardCount = defaults.BossGuaranteedRewardCount,
             InitialMysteryPillCount = defaults.InitialMysteryPillCount,
+            PhdRelicRarity = defaults.PhdRelicRarity,
+            FalsePhdRelicRarity = defaults.FalsePhdRelicRarity,
             SyncMultiplayerParametersWithHost = true,
             EnableSharedMultiplayerPillPool = false,
             EnableNormalRewards = defaults.EnableNormalRewards,
@@ -294,6 +318,8 @@ public static class PillRewardSettings
         _data.EliteGuaranteedRewardCount = Math.Clamp(_data.EliteGuaranteedRewardCount, 0, 20);
         _data.BossGuaranteedRewardCount = Math.Clamp(_data.BossGuaranteedRewardCount, 0, 20);
         _data.InitialMysteryPillCount = Math.Clamp(_data.InitialMysteryPillCount, 0, 1000);
+        _data.PhdRelicRarity = PhdRelicRarityRules.Normalize(_data.PhdRelicRarity);
+        _data.FalsePhdRelicRarity = PhdRelicRarityRules.Normalize(_data.FalsePhdRelicRarity);
     }
 
     private static void NormalizeOdds(
@@ -377,6 +403,8 @@ public static class PillRewardSettings
     public const string EliteGuaranteedRewardCountKey = "elite_guaranteed_reward_count";
     public const string BossGuaranteedRewardCountKey = "boss_guaranteed_reward_count";
     public const string InitialMysteryPillCountKey = "initial_mystery_pill_count";
+    public const string PhdRelicRarityKey = "phd_relic_rarity";
+    public const string FalsePhdRelicRarityKey = "false_phd_relic_rarity";
     public const string SyncMultiplayerParametersWithHostKey = "sync_multiplayer_parameters_with_host";
     public const string EnableSharedMultiplayerPillPoolKey = "enable_shared_multiplayer_pill_pool";
     public const string EnableNormalRewardsKey = "enable_normal_rewards";
@@ -394,6 +422,8 @@ public static class PillRewardSettings
         NormalGenerationAttemptsKey, EliteGenerationAttemptsKey, BossGenerationAttemptsKey,
         NormalGuaranteedRewardCountKey, EliteGuaranteedRewardCountKey, BossGuaranteedRewardCountKey,
         InitialMysteryPillCountKey,
+        PhdRelicRarityKey,
+        FalsePhdRelicRarityKey,
         SyncMultiplayerParametersWithHostKey,
         EnableSharedMultiplayerPillPoolKey,
         EnableNormalRewardsKey, EnableEliteRewardsKey, EnableBossRewardsKey, PreventDuplicateOptionsKey
@@ -426,6 +456,8 @@ public sealed class PillRewardSettingsData
     public int EliteGuaranteedRewardCount;
     public int BossGuaranteedRewardCount;
     public int InitialMysteryPillCount;
+    public string PhdRelicRarity = PhdRelicRarityRules.DefaultValue;
+    public string FalsePhdRelicRarity = PhdRelicRarityRules.DefaultValue;
     public bool SyncMultiplayerParametersWithHost;
     public bool EnableSharedMultiplayerPillPool;
     public bool EnableNormalRewards;

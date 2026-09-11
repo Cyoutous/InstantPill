@@ -15,8 +15,8 @@ using MegaCrit.Sts2.Core.Runs;
 namespace InstantPill.InstantPillCode.Gameplay.PHD;
 
 /// <summary>
-/// Applies PHD's one-time pickup behaviour. It reveals the normal, immutable pool assignments
-/// and then materializes each card for its owner; it never rewrites an assigned-effect ID.
+/// Applies either pharmacy relic's one-time pickup behaviour. It reveals normal, immutable pool
+/// assignments and materializes cards for their owner; it never rewrites an assigned-effect ID.
 /// </summary>
 public static class PhdPillConversionService
 {
@@ -27,7 +27,23 @@ public static class PhdPillConversionService
             throw new InvalidOperationException("InstantPill attempted PHD conversion for a player without PHD.");
         }
 
-        // Existing identified pills belong only to the new PHD owner. Do this before revealing
+        await RevealAndMaterializePills(player, "PHD");
+    }
+
+    public static async Task OnFalsePhdObtained(Player player)
+    {
+        if (!PillPhdResolver.HasFalsePhd(player))
+        {
+            throw new InvalidOperationException("InstantPill attempted False PHD conversion for a player without False PHD.");
+        }
+
+        await RevealAndMaterializePills(player, "False PHD");
+    }
+
+    private static async Task RevealAndMaterializePills(Player player, string relicName)
+    {
+
+        // Existing identified pills belong only to the new relic owner. Do this before revealing
         // mysteries so a replacement whose own metadata has a replacement cannot form a chain.
         await TransformOwnedIdentifiedEffectPills(player);
 
@@ -54,7 +70,7 @@ public static class PhdPillConversionService
         }
 
         MainFile.Logger.Info(
-            $"Applied PHD pill conversion for player {player.NetId}; revealed {unrevealedSlots.Length} mystery slot(s).",
+            $"Applied {relicName} pill conversion for player {player.NetId}; revealed {unrevealedSlots.Length} mystery slot(s).",
             1);
     }
 

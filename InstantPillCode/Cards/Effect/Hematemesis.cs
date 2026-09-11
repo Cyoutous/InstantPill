@@ -30,6 +30,8 @@ public sealed class Hematemesis : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade2;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-FPHD_BAD_TRIP";
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         HoverTipFactory.FromCard<Heart>()

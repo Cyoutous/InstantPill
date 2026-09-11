@@ -35,6 +35,8 @@ public static class PillRewardSaveRegistration
             ExtendedSaveTypes.PropertyFunc<PillRewardRulesSnapshot, int>(nameof(PillRewardRulesSnapshot.EliteGuaranteedRewardCount)),
             ExtendedSaveTypes.PropertyFunc<PillRewardRulesSnapshot, int>(nameof(PillRewardRulesSnapshot.BossGuaranteedRewardCount)),
             ExtendedSaveTypes.PropertyFunc<PillRewardRulesSnapshot, int>(nameof(PillRewardRulesSnapshot.InitialMysteryPillCount)),
+            ExtendedSaveTypes.PropertyFunc<PillRewardRulesSnapshot, string>(nameof(PillRewardRulesSnapshot.PhdRelicRarity)),
+            ExtendedSaveTypes.PropertyFunc<PillRewardRulesSnapshot, string>(nameof(PillRewardRulesSnapshot.FalsePhdRelicRarity)),
             ExtendedSaveTypes.PropertyFunc<PillRewardRulesSnapshot, bool>(nameof(PillRewardRulesSnapshot.EnableNormalRewards)),
             ExtendedSaveTypes.PropertyFunc<PillRewardRulesSnapshot, bool>(nameof(PillRewardRulesSnapshot.EnableEliteRewards)),
             ExtendedSaveTypes.PropertyFunc<PillRewardRulesSnapshot, bool>(nameof(PillRewardRulesSnapshot.EnableBossRewards)),

@@ -1,5 +1,8 @@
 {
   "INSTANTPILL-PHD.title": "药学博士证",
   "INSTANTPILL-PHD.description": "拾起时，将2张[gold]红心[/gold]和1张随机[gold]胶囊[/gold]加入你的[gold]牌组[/gold]。\n你能分辨所有[gold]胶囊[/gold]。\n[gold]胶囊[/gold]的效果更加友善。",
-  "INSTANTPILL-PHD.flavor": ""
+  "INSTANTPILL-PHD.flavor": "",
+  "INSTANTPILL-FALSE_PHD.title": "伪造药学博士证",
+  "INSTANTPILL-FALSE_PHD.description": "拾起时，将1张随机[gold]胶囊[/gold]加入你的牌组。\n你能分辨所有[gold]胶囊[/gold]。\n[gold]胶囊[/gold]的效果更加邪恶。\n你每打出一张极强效果的[gold]胶囊[/gold]，在每场战斗开始时获得1点[gold]力量[/gold]、1点[gold]敏捷[/gold]和1点[gold]集中[/gold]。",
+  "INSTANTPILL-FALSE_PHD.flavor": ""
 }

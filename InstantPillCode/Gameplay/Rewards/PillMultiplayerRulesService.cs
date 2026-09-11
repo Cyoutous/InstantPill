@@ -90,7 +90,16 @@ public static class PillMultiplayerRulesService
 
     public static PillRewardRulesSnapshot CreateRulesForNewPlayer(Player player)
     {
-        PillMultiplayerRulesSessionState? state = State.Get(player.RunState);
+        return CreateRulesForNewRun(player.RunState);
+    }
+
+    /// <summary>
+    /// Returns the rules that govern this newly-created run before player-owned reward state has
+    /// been initialized. This is also used while vanilla constructs relic grab bags.
+    /// </summary>
+    public static PillRewardRulesSnapshot CreateRulesForNewRun(IRunState runState)
+    {
+        PillMultiplayerRulesSessionState? state = State.Get(runState);
         if (state?.Snapshot.HostSynchronizesParameters == true)
         {
             return state.Snapshot.RewardRules.Clone();

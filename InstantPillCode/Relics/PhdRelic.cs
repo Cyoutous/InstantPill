@@ -30,7 +30,7 @@ public sealed class PhdRelic : CustomRelicModel
 
     protected override string BigIconPath => "res://InstantPill/images/relics/big/phd.png";
 
-    public override RelicRarity Rarity => RelicRarity.Shop;
+    public override RelicRarity Rarity => PhdRelicRarityService.CurrentRarity;
 
     public override async Task AfterObtained()
     {

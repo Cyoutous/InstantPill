@@ -5,6 +5,7 @@ using BaseLib.Utils;
 using HarmonyLib;
 using InstantPill.InstantPillCode.Cards.Effect;
 using InstantPill.InstantPillCode.Content;
+using InstantPill.InstantPillCode.Relics;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -34,6 +35,33 @@ public static class CapsuleUsageHistory
         }
 
         Record(card.Owner, card.Id.Entry);
+    }
+
+    /// <summary>
+    /// Applies False PHD's permanent counter gain for a directly played, explicitly marked
+    /// effect pill. This intentionally shares Question Marks' proxy-suppression scope with the
+    /// Vurp history recorder: a card temporarily executed by Question Marks is not a pill the
+    /// player actually played and therefore cannot increase the relic counter.
+    /// </summary>
+    public static void RecordExtremelyPowerfulEffect(CardModel card)
+    {
+        if (IsProxyPlayHistorySuppressed ||
+            card is not BaseEffectPillCard { IsExtremelyPowerfulEffect: true })
+        {
+            return;
+        }
+
+        FalsePhdRelic? falsePhd = card.Owner.GetRelic<FalsePhdRelic>();
+        if (falsePhd == null)
+        {
+            return;
+        }
+
+        falsePhd.AddPotency();
+        falsePhd.Flash();
+        MainFile.Logger.Info(
+            $"False PHD gained potency from {card.Id.Entry}; new potency: {falsePhd.Potency}.",
+            1);
     }
 
     /// <summary>
@@ -146,5 +174,6 @@ internal static class CapsuleUsageHistoryPatch
     {
         await originalTask;
         CapsuleUsageHistory.Record(cardPlay.Card);
+        CapsuleUsageHistory.RecordExtremelyPowerfulEffect(cardPlay.Card);
     }
 }

@@ -24,6 +24,8 @@ public sealed class SpeedDown : BaseEffectPillCard
 
     public override string? PhdReplacementCardId => "INSTANTPILL-SPEED_UP";
 
+    public override bool IsExtremelyPowerfulEffect => true;
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         HoverTipFactory.FromCard<Clumsy>()

@@ -29,6 +29,8 @@ public sealed class HealthDown : BaseEffectPillCard
 
     public override string? PhdReplacementCardId => "INSTANTPILL-HEALTH_UP";
 
+    public override bool IsExtremelyPowerfulEffect => true;
+
     // Blood Wall explicitly preloads this scene before it plays the same VFX.
     protected override IEnumerable<string> ExtraRunAssetPaths =>
         [SceneHelper.GetScenePath("vfx/vfx_blood_wall")];

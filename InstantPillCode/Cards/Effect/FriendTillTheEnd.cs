@@ -22,6 +22,8 @@ public sealed class FriendTillTheEnd : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade1;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-HEALTH_DOWN";
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         HoverTipFactory.Static(StaticHoverTip.Channeling),

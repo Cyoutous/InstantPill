@@ -28,6 +28,8 @@ public sealed class Pheromones : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade3;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-PARALYSIS";
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [StunIntent.GetStaticHoverTip()];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using InstantPill.InstantPillCode.Content;
 using InstantPill.InstantPillCode.Gameplay.Pools;
+using InstantPill.InstantPillCode.Relics;
 using MegaCrit.Sts2.Core.DevConsole;
 using MegaCrit.Sts2.Core.DevConsole.ConsoleCommands;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -19,9 +20,9 @@ public sealed class InstantPillConsoleCmd : AbstractConsoleCmd
 {
     public override string CmdName => "instantpill";
 
-    public override string Args => "<grant|clear|pools>";
+    public override string Args => "<grant|clear|pools|falsephd add>";
 
-    public override string Description => "InstantPill test command: grant/clear Capsule, or print this player's pill pools.";
+    public override string Description => "InstantPill test command: grant/clear Capsule, print pill pools, or add False PHD potency.";
 
     public override bool IsNetworked => false;
 
@@ -35,9 +36,16 @@ public sealed class InstantPillConsoleCmd : AbstractConsoleCmd
             return new CmdResult(success: false, "Start a single-player run before using InstantPill test commands.");
         }
 
+        if (args.Length == 2 &&
+            args[0].Equals("falsephd", StringComparison.OrdinalIgnoreCase) &&
+            args[1].Equals("add", StringComparison.OrdinalIgnoreCase))
+        {
+            return AddFalsePhdPotency(issuingPlayer);
+        }
+
         if (args.Length != 1)
         {
-            return new CmdResult(success: false, "Usage: instantpill <grant|clear|pools>");
+            return new CmdResult(success: false, "Usage: instantpill <grant|clear|pools|falsephd add>");
         }
 
         return args[0].ToLowerInvariant() switch
@@ -45,8 +53,23 @@ public sealed class InstantPillConsoleCmd : AbstractConsoleCmd
             "grant" => Grant(issuingPlayer),
             "clear" => Clear(issuingPlayer),
             "pools" => PrintPools(issuingPlayer),
-            _ => new CmdResult(success: false, "Usage: instantpill <grant|clear|pools>")
+            _ => new CmdResult(success: false, "Usage: instantpill <grant|clear|pools|falsephd add>")
         };
+    }
+
+    private static CmdResult AddFalsePhdPotency(Player player)
+    {
+        FalsePhdRelic? relic = player.GetRelic<FalsePhdRelic>();
+        if (relic == null)
+        {
+            return new CmdResult(
+                success: false,
+                $"False PHD is not owned. Add it first with: relic {FalsePhdRelic.RelicId}");
+        }
+
+        relic.AddPotency();
+        MainFile.Logger.Info($"Console test command increased False PHD potency to {relic.Potency}.", 1);
+        return new CmdResult(success: true, $"False PHD potency is now {relic.Potency}.");
     }
 
     private static CmdResult Grant(Player player)

@@ -22,8 +22,8 @@ namespace InstantPill.InstantPillCode.Cards.Effect;
 /// A grade-2 pill that hits one random enemy, then transfers twice that resolved damage to every
 /// other hittable enemy. The transfer follows Omnislice's result-based damage propagation.
 /// </summary>
-[CustomID("INSTANTPILL-HURF")]
-public sealed class Hurf : BaseEffectPillCard
+[CustomID("INSTANTPILL-HORF")]
+public sealed class Horf : BaseEffectPillCard
 {
     private static readonly Color PoisonVfxTint = new("83eb85");
 

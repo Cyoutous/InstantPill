@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using MegaCrit.Sts2.Core.Saves;
+using MegaCrit.Sts2.Core.Nodes.Audio;
 
 namespace InstantPill.InstantPillCode.Audio;
 
@@ -17,6 +18,13 @@ internal static class PillAudio
 {
     private const string StreamingFilesTypeName = "STS2RitsuLib.Audio.FmodStudioStreamingFiles";
 
+    // Packed mod assets must use RitsuLib's resource-specific bridge. It materializes the
+    // imported audio resource from the PCK into a private FMOD-readable cache before playback.
+    private static MethodInfo? _preloadResourceAsSound;
+    private static MethodInfo? _playResourceSound;
+
+    // Retain RitsuLib's loose-file API as a fallback for older installed versions which predate
+    // the resource bridge.
     private static MethodInfo? _preloadAsSound;
     private static MethodInfo? _playSoundFile;
     private static readonly HashSet<string> PreloadedPaths = new(StringComparer.Ordinal);
@@ -47,7 +55,7 @@ internal static class PillAudio
     }
 
     /// <summary>
-    /// Preloads a mod-owned raw audio asset once, then plays it as a local FMOD one-shot.
+    /// Preloads a mod-owned audio asset once, then plays it as a local FMOD one-shot.
     /// The caller owns the resource path and decides when playback is appropriate.
     /// </summary>
     public static void PlayOneShot(string resourcePath, float baseVolume = 1f, float pitch = 1f)
@@ -65,23 +73,69 @@ internal static class PillAudio
 
         Initialize();
 
-        if (_preloadAsSound is not null && PreloadedPaths.Add(resourcePath))
+        bool isGodotResource = resourcePath.StartsWith("res://", StringComparison.Ordinal) ||
+                               resourcePath.StartsWith("user://", StringComparison.Ordinal);
+        MethodInfo? preloadMethod = isGodotResource && _preloadResourceAsSound is not null
+            ? _preloadResourceAsSound
+            : _preloadAsSound;
+        MethodInfo? playMethod = isGodotResource && _playResourceSound is not null
+            ? _playResourceSound
+            : _playSoundFile;
+
+        if (preloadMethod is not null && PreloadedPaths.Add(resourcePath))
         {
-            Invoke(_preloadAsSound, resourcePath, "preload");
+            if (!Invoke(preloadMethod, resourcePath, "preload"))
+            {
+                // A failed cache materialization must be retried on a later request instead of
+                // being permanently treated as preloaded for this game session.
+                PreloadedPaths.Remove(resourcePath);
+            }
         }
 
-        if (_playSoundFile is not null)
+        if (playMethod is not null)
         {
             // VolumeSfx is the 0-1 value driven by the game's native SFX-volume slider.
             // Reading it here keeps every new capsule sound aligned with the player's current setting.
             float actualVolume = baseVolume * Math.Clamp(SaveManager.Instance.SettingsSave.VolumeSfx, 0f, 1f);
-            Invoke(_playSoundFile, resourcePath, "play", actualVolume, pitch);
+            Invoke(playMethod, resourcePath, "play", actualVolume, pitch);
+        }
+    }
+
+    /// <summary>
+    /// Plays a built-in STS2 FMOD event immediately. This deliberately does not consult
+    /// <see cref="AreCustomCardSoundsSuppressed"/>: callers use it for authored card-effect
+    /// audio which remains audible when Question Marks proxies a pill's gameplay.
+    /// </summary>
+    public static void PlayVanillaCardEffect(string eventPath)
+    {
+        if (string.IsNullOrWhiteSpace(eventPath))
+        {
+            MainFile.Logger.Warn("InstantPill ignored a vanilla audio request with an empty event path.");
+            return;
+        }
+
+        try
+        {
+            // Native event routing retains the game's own SFX-bus and volume-slider behavior.
+            NAudioManager? audioManager = NAudioManager.Instance;
+            if (audioManager is null)
+            {
+                MainFile.Logger.Warn($"InstantPill could not play vanilla audio event '{eventPath}': audio manager is unavailable.");
+                return;
+            }
+
+            audioManager.PlayOneShot(eventPath);
+        }
+        catch (Exception exception)
+        {
+            MainFile.Logger.Warn($"InstantPill could not play vanilla audio event '{eventPath}': {exception.Message}");
         }
     }
 
     private static void ResolveStreamingMethods()
     {
-        if (_preloadAsSound is not null && _playSoundFile is not null)
+        if ((_preloadResourceAsSound is not null && _playResourceSound is not null) ||
+            (_preloadAsSound is not null && _playSoundFile is not null))
         {
             return;
         }
@@ -96,10 +150,18 @@ internal static class PillAudio
             return;
         }
 
+        _preloadResourceAsSound = FindStringMethod(
+            streamingFilesType,
+            "TryPreloadResourceAsSound",
+            parameterCount: 1);
+        _playResourceSound = FindStringMethod(streamingFilesType, "TryPlayResourceSound");
+
         _preloadAsSound = FindStringMethod(streamingFilesType, "TryPreloadAsSound", parameterCount: 1);
         _playSoundFile = FindStringMethod(streamingFilesType, "TryPlaySoundFile");
 
-        if (_preloadAsSound is null || _playSoundFile is null)
+        bool hasResourceBridge = _preloadResourceAsSound is not null && _playResourceSound is not null;
+        bool hasLooseFileBridge = _preloadAsSound is not null && _playSoundFile is not null;
+        if (!hasResourceBridge && !hasLooseFileBridge)
         {
             ReportUnavailable("RitsuLib's installed audio API does not expose the required sound methods.");
             return;
@@ -108,7 +170,8 @@ internal static class PillAudio
         if (!_reportedReady)
         {
             _reportedReady = true;
-            MainFile.Logger.Info("InstantPill connected to RitsuLib's FMOD audio bridge.", 1);
+            string bridgeKind = hasResourceBridge ? "resource" : "loose-file fallback";
+            MainFile.Logger.Info($"InstantPill connected to RitsuLib's {bridgeKind} FMOD audio bridge.", 1);
         }
     }
 
@@ -125,7 +188,7 @@ internal static class PillAudio
         });
     }
 
-    private static void Invoke(
+    private static bool Invoke(
         MethodInfo method,
         string path,
         string operation,
@@ -153,15 +216,24 @@ internal static class PillAudio
                 arguments[2] = pitch.Value;
             }
 
-            method.Invoke(null, arguments);
+            object? result = method.Invoke(null, arguments);
+            if (result is bool success && !success)
+            {
+                MainFile.Logger.Warn($"InstantPill audio {operation} returned false for '{path}'.");
+                return false;
+            }
+
+            return true;
         }
         catch (TargetInvocationException exception)
         {
             MainFile.Logger.Warn($"InstantPill could not {operation} audio '{path}': {exception.InnerException?.Message ?? exception.Message}");
+            return false;
         }
         catch (Exception exception)
         {
             MainFile.Logger.Warn($"InstantPill could not {operation} audio '{path}': {exception.Message}");
+            return false;
         }
     }
 

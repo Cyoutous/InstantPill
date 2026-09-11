@@ -22,6 +22,20 @@ public abstract class BaseEffectPillCard : BasePillCard
     public virtual string? PhdReplacementCardId => null;
 
     /// <summary>
+    /// The identified effect which replaces this pill for a player holding False PHD.
+    /// This remains independent from <see cref="PhdReplacementCardId"/> so both relics
+    /// can be resolved without rewriting the run's original mystery mapping.
+    /// </summary>
+    public virtual string? FalsePhdReplacementCardId => null;
+
+    /// <summary>
+    /// Hidden balance metadata for False PHD. When a player directly completes the play of an
+    /// identified effect pill with this marker, their False PHD gains one counter. Proxy effects
+    /// executed by Question Marks are deliberately excluded by the central play tracker.
+    /// </summary>
+    public virtual bool IsExtremelyPowerfulEffect => false;
+
+    /// <summary>
     /// Identified effect pills use the combat consume visual in place of the normal Power-card
     /// flight. Mystery pills deliberately do not inherit this marker, so they retain the base
     /// Power presentation until they reveal into an effect pill.

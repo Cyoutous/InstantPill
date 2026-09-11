@@ -19,6 +19,8 @@ public sealed class FullHealth : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade3;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-FPHD_BAD_TRIP";
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (LocalContext.IsMine(this))

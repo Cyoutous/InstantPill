@@ -28,6 +28,8 @@ public sealed class TearsDown : BaseEffectPillCard
 
     public override string? PhdReplacementCardId => "INSTANTPILL-TEARS_UP";
 
+    public override bool IsExtremelyPowerfulEffect => true;
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         .. HoverTipFactory.FromEnchantment<Negative>(),

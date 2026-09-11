@@ -29,6 +29,8 @@ public sealed class LemonParty : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade1;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-AMNESIA";
+
     // The highlighted Demise text needs an explicit power hover tip, just like original cards
     // which apply Poison, Vulnerable, or other powers.
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<DemisePower>()];

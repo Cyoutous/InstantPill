@@ -22,6 +22,8 @@ public sealed class Telepills : BaseEffectPillCard
 
     protected override int StrengthAmount => 0;
 
+    public override string? FalsePhdReplacementCardId => QuestionMarks.CardId;
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (LocalContext.IsMine(this))

@@ -25,6 +25,8 @@ public sealed class OneMakesYouLarger : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade2;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-RANGE_DOWN";
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         new HoverTip(

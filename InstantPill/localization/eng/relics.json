@@ -1,5 +1,8 @@
 {
   "INSTANTPILL-PHD.title": "PHD",
   "INSTANTPILL-PHD.description": "When obtained, add 2 [gold]Hearts[/gold] and 1 random [gold]Pill[/gold] to your [gold]deck[/gold].\nYou can identify all [gold]Pills[/gold].\n[gold]Pills[/gold] have friendlier effects.",
-  "INSTANTPILL-PHD.flavor": ""
+  "INSTANTPILL-PHD.flavor": "",
+  "INSTANTPILL-FALSE_PHD.title": "False PHD",
+  "INSTANTPILL-FALSE_PHD.description": "When obtained, add 1 random [gold]Pill[/gold] to your deck.\nYou can identify all [gold]Pills[/gold].\n[gold]Pills[/gold] have more wicked effects.\nFor each [gold]Pill[/gold] with a powerful effect you play, gain 1 [gold]Strength[/gold], 1 [gold]Dexterity[/gold], and 1 [gold]Focus[/gold] at the start of each combat.",
+  "INSTANTPILL-FALSE_PHD.flavor": ""
 }

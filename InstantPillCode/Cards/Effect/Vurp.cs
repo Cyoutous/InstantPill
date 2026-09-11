@@ -26,6 +26,8 @@ public sealed class Vurp : BaseEffectPillCard
 
     public override EffectPillGrade Grade => EffectPillGrade.Grade1;
 
+    public override string? FalsePhdReplacementCardId => "INSTANTPILL-HORF";
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (LocalContext.IsMine(this))
