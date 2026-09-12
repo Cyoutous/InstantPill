@@ -18,6 +18,11 @@ internal static class PillAudio
 {
     private const string StreamingFilesTypeName = "STS2RitsuLib.Audio.FmodStudioStreamingFiles";
 
+    // All authored WAV files pass through this one multiplier before the game's SFX slider is
+    // applied. Keep individual card volumes available for intentional per-card variation, while
+    // preventing unnormalized source files from overwhelming vanilla SFX as a group.
+    private const float CustomPillSoundVolumeMultiplier = 0.6f;
+
     // Packed mod assets must use RitsuLib's resource-specific bridge. It materializes the
     // imported audio resource from the PCK into a private FMOD-readable cache before playback.
     private static MethodInfo? _preloadResourceAsSound;
@@ -96,7 +101,9 @@ internal static class PillAudio
         {
             // VolumeSfx is the 0-1 value driven by the game's native SFX-volume slider.
             // Reading it here keeps every new capsule sound aligned with the player's current setting.
-            float actualVolume = baseVolume * Math.Clamp(SaveManager.Instance.SettingsSave.VolumeSfx, 0f, 1f);
+            float actualVolume = baseVolume
+                * CustomPillSoundVolumeMultiplier
+                * Math.Clamp(SaveManager.Instance.SettingsSave.VolumeSfx, 0f, 1f);
             Invoke(playMethod, resourcePath, "play", actualVolume, pitch);
         }
     }
